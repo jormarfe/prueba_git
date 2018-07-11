@@ -1,0 +1,105 @@
+<System xmlns="http://eumetsat.org/mtg/ssm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://dam-build.groupinfra.de/nexus/service/local/repo_groups/idpf/content/com/cgi/idpf/pi-core/ssm/0.1.1-SNAPSHOT/ ssm-0.1.1-SNAPSHOT-schema.xsd"
+    name="TopLevel">
+
+    <description>The Space System Model used for IDPF</description>
+
+    <!-- MCM monitoring -->
+    <System name="mcm" reference="mcm.xml" />
+
+    <!-- Monitored and Self-Controlled links -->
+    <System name="links" reference="links.xml" />
+
+    <!-- Common processing infrastructure sub-systems and services -->
+    <System name="pi" reference="pi.xml" />
+
+    <!-- Space System Model for MTGI chains -->
+    <System name="MTGI" reference="mtgi.xml" />
+
+    <!-- The SSM Test branch is used to encapsulate all test related elements.  -->
+    <System name="Test" reference="Test-SSM.xml" />
+
+    <!-- Activity error events (including signal based events) are root events that are used by all activities. -->
+    <!-- Except in the case of signal activities which are for native only code. -->
+    <System name="System">
+        <description>System is the root of this integration platform infrastructure.</description>
+        <System name="Spacecraft">
+            <description>Common spacecraft specific SSM elements.</description>
+            <Parameter name="InManoeuvre" type="java.lang.Boolean">
+                <description>Parameter that signifies if the spacecraft is currently manoeuvring.</description>
+            </Parameter>
+        </System>
+
+        <!-- The name of the processing environment (OPE/IV/VAL/DEV) -->
+        <!-- The parameter is read by the Algorithm base and feeds through to dataset metadata -->
+        <Parameter name="environment" type="java.lang.String" defaultValue="IV">
+            <description>The unique name of the processing environment</description>
+        </Parameter>
+
+        <Parameter name="dispositionMode" type="java.lang.String" defaultValue="T">
+            <description>
+                Shows disposition of the dataSet (ref. GFS/v3M/12.05.2015) from the perspective of
+                an end-user's needs.
+             </description>
+        </Parameter>
+
+        <System name="Timeliness" reference="timeliness.xml" />
+
+        <Event name="algorithmError" severity="3" message="Algorithm error">
+            <description>Event raised by any algorithm when it encounters an unrecoverable error.</description>
+            <Argument name="errorMessage" type="java.lang.String">
+                <description>Error message set by the algorithm when raising this error event.</description>
+            </Argument>
+            <Argument name="algorithmInstancePath" type="java.lang.String">
+                <description>The SSM path of the algorithm raising this error event.</description>
+            </Argument>
+            <Argument name="timestampOfError" type="java.lang.Long">
+                <description>The time this error event was raised.</description>
+            </Argument>
+        </Event>
+    </System>
+
+    <System name="Archive">
+        <description>Archiving sub-system describing the persistence and retrieval capabilities along with the rules
+            that orchestrate them.
+        </description>
+        <Activity name="coreRulesEngine" urn="urn:rules:">
+            <description>Core rule set for orchestrating the archiving sub-system.</description>
+            <Artifact group="com.cgi.idpf.distribution.drools" artifact="archive" version="${project.version}" />
+            <subscribe>/</subscribe>
+        </Activity>
+
+        <Activity name="ArchiveReader" urn="urn:archive:REPLAY">
+            <description>Adapter that handles all file based replay/retrieval activities.</description>
+            <Parameter name="replayPosition" type="java.lang.Long" defaultValue="0">
+                <description>The current time in ms of the replay session</description>
+            </Parameter>
+            <Argument type="java.lang.String" name="partition" default="MTGI">
+                <description>Sub-folder name to be used within the PRD directory.</description>
+            </Argument>
+            <Argument type="java.util.Date" name="preStart">
+                <description>TODO</description>
+            </Argument>
+            <Argument type="java.util.Date" name="start">
+                <description>The Date to start the replay.</description>
+            </Argument>
+            <Argument type="java.util.Date" name="end">
+                <description>The Date to end the replay.</description>
+            </Argument>
+            <Argument type="java.lang.Integer" name="step">
+                <description>The step or gap (unit?) between intervals of data that will be retrieved in the replay.
+                </description>
+            </Argument>
+            <Argument type="java.lang.Integer" name="interval">
+                <description>The increments (unit?) of data that will be retrieved in the replay.</description>
+            </Argument>
+            <Argument type="java.lang.Boolean" name="partial" default="true">
+                <description>TODO.</description>
+            </Argument>
+            <Argument type="java.lang.Boolean" name="createFake" default="false">
+                <description>TODO.</description>
+            </Argument>
+        </Activity>
+    </System>
+
+</System>

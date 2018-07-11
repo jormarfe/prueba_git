@@ -1,0 +1,59 @@
+<System xmlns="http://eumetsat.org/mtg/ssm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://dam-build.groupinfra.de/nexus/service/local/repo_groups/idpf/content/com/cgi/idpf/pi-core/ssm/0.1.1-SNAPSHOT/ ssm-0.1.1-SNAPSHOT-schema.xsd"
+    name="IntegrationPlatform">
+
+    <description>The Space System Model used for the L0 SIM TEST.</description>
+
+    <!-- L0 SIM system -->
+    <System name="L0Sim">
+        <description>L0 Simulator Test system.</description>
+
+        <!-- L0 SIM parameters -->
+
+        <!-- L0 SIM events -->
+
+        <!-- L0 SIM scripts sub-system -->
+        <System name="Scripts">
+            <!-- An activity to simulate FCI L0 APE  -->
+            <Activity name="FciL0Sim" reference="activities/fci_l0_sim_script.xml" urn="script:python:fciL0Sim" />
+
+            <!-- An activity to simulate LI L0 APE  -->
+            <Activity name="LiL0Sim" reference="activities/li_l0_sim_script.xml" urn="script:python:liL0Sim" />
+
+            <!-- An activity to simulate PFAUX L0 APE  -->
+            <Activity name="PfAuxL0Sim" reference="activities/pfaux_l0_sim_script.xml" urn="script:python:pfauxL0Sim" />
+        </System> <!-- L0 SIM scripts sub-system -->
+
+        <!-- L0 SIM APE sub-system -->
+        <!-- <System name="APE">
+            <description>Level 0 Simulator APEs sub-system.</description>
+            <Activity name="FciL0Sim" urn="urn:ape:fci-l0-sim" reference="activities/fci_l0_sim_ssm.xml">
+                <description>FCI L0 SIM APE.</description>
+            </Activity>
+            <Activity name="LiL0Sim" urn="urn:ape:li-l0-sim" reference="activities/li_l0_sim_ssm.xml">
+                <description>LI L0 SIM APE.</description>
+            </Activity>
+            <Activity name="PfAuxL0Sim" urn="urn:ape:pfaux-l0-sim" reference="activities/pfaux_l0_sim_ssm.xml">
+                <description>PFAUX L0 SIM APE.</description>
+            </Activity>
+        </System> --> <!-- L0 SIM APE sub-system -->
+    </System> <!-- L0 SIM system -->
+
+    <!-- Activity error events (including signal based events) are root events that are used by all activities. -->
+    <!-- Except in the case of signal activities which are for native only code. -->
+    <System name="System">
+        <description>System is the root of this integration platform infrastructure.</description>
+        <System name="Spacecraft">
+            <description>Common spacecraft specific SSM elements.</description>
+            <Parameter name="InManoeuvre" type="java.lang.Boolean">
+                <description>Parameter that signifies if the spacecraft is currently manoeuvring.</description>
+            </Parameter>
+        </System>
+
+        <!-- The name of the processing environment (OPE/VAL/DEV) -->
+        <!-- The parameter is read by the Algorithm base and feeds through to dataset metadata -->
+        <Parameter name="environment" type="java.lang.String" defaultValue="DEV">
+            <description>The unique name of the processing environment</description>
+        </Parameter>
+    </System>
+</System>

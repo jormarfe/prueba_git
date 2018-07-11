@@ -1,0 +1,283 @@
+<System xmlns="http://eumetsat.org/mtg/ssm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <description>L1C block geographic elevations used as the L1C trigger constraints.
+    Note that the elevations are positive in the southern hemisphere and negative in the northern hemisphere.
+    Therefore the southern bound of each block should have a greater elevation than the northern block...  
+    </description>
+    
+    <System name="block01" >
+        <description>Geographic elevation for an L1C block </description>
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-8.9151">
+            <description>Max Southern elevation of the block. Used to calculate the boundaries of the generated L1C zone.</description>
+        </Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-8.6267">
+            <description>Max Northern elevation of the block. Used to calculate the boundaries of the generated L1C zone.</description>
+        </Parameter>
+    </System>
+    <System name="block02" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-8.626781143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-8.360849143"></Parameter>"
+    </System>
+    <System name="block03" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-8.360849143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-8.094917143"></Parameter>"
+    </System>
+    <System name="block04" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-8.094917143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-7.828985143"></Parameter>"
+    </System>
+    <System name="block05" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-7.828985143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-7.563053143"></Parameter>"
+    </System>
+    <System name="block06" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-7.563053143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-7.297121143"></Parameter>"
+    </System>
+    <System name="block07" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-7.297121143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-7.031189143"></Parameter>"
+    </System>
+    <System name="block08" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-7.031189143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-6.765257143"></Parameter>"
+    </System>
+    <System name="block09" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-6.765257143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-6.499325143"></Parameter>"
+    </System>
+    <System name="block10" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-6.499325143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-6.233393143"></Parameter>"
+    </System>
+    <System name="block11" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-6.233393143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-5.967461143"></Parameter>"
+    </System>
+    <System name="block12" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-5.967461143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-5.701529143"></Parameter>"
+    </System>
+    <System name="block13" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-5.701529143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-5.435597143"></Parameter>"
+    </System>
+    <System name="block14" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-5.435597143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-5.169665143"></Parameter>"
+    </System>
+    <System name="block15" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-5.169665143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-4.903733143"></Parameter>"
+    </System>
+    <System name="block16" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-4.903733143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-4.637801143"></Parameter>"
+    </System>
+    <System name="block17" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-4.637801143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-4.371869143"></Parameter>"
+    </System>
+    <System name="block18" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-4.371869143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-4.105937143"></Parameter>"
+    </System>
+    <System name="block19" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-4.105937143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-3.840005143"></Parameter>"
+    </System>
+    <System name="block20" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-3.840005143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-3.574073143"></Parameter>"
+    </System>
+    <System name="block21" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-3.574073143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-3.308141143"></Parameter>"
+    </System>
+    <System name="block22" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-3.308141143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-3.042209143"></Parameter>"
+    </System>
+    <System name="block23" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-3.042209143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-2.776277143"></Parameter>"
+    </System>
+    <System name="block24" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-2.776277143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-2.510345143"></Parameter>"
+    </System>
+    <System name="block25" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-2.510345143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-2.244413143"></Parameter>"
+    </System>
+    <System name="block26" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-2.244413143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-1.978481143"></Parameter>"
+    </System>
+    <System name="block27" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-1.978481143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-1.712549143"></Parameter>"
+    </System>
+    <System name="block28" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-1.712549143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-1.446617143"></Parameter>"
+    </System>
+    <System name="block29" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-1.446617143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-1.180685143"></Parameter>"
+    </System>
+    <System name="block30" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-1.180685143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-0.914753143000001"></Parameter>"
+    </System>
+    <System name="block31" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-0.914753143000001"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-0.648821143000001"></Parameter>"
+    </System>
+    <System name="block32" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-0.648821143000001"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-0.382889143000002"></Parameter>"
+    </System>
+    <System name="block33" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-0.382889143000002"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="-0.116957143"></Parameter>"
+    </System>
+    <System name="block34" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-0.116957143"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="0.148974856999999"></Parameter>"
+    </System>
+    <System name="block35" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="0.148974856999999"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="0.414906856999998"></Parameter>"
+    </System>
+    <System name="block36" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="0.414906856999998"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="0.680838856999999"></Parameter>"
+    </System>
+    <System name="block37" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="0.680838856999999"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="0.946770856999999"></Parameter>"
+    </System>
+    <System name="block38" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="0.946770856999999"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="1.212702857"></Parameter>"
+    </System>
+    <System name="block39" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="1.212702857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="1.478634857"></Parameter>"
+    </System>
+    <System name="block40" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="1.478634857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="1.744566857"></Parameter>"
+    </System>
+    <System name="block41" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="1.744566857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="2.010498857"></Parameter>"
+    </System>
+    <System name="block42" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="2.010498857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="2.276430857"></Parameter>"
+    </System>
+    <System name="block43" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="2.276430857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="2.542362857"></Parameter>"
+    </System>
+    <System name="block44" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="2.542362857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="2.808294857"></Parameter>"
+    </System>
+    <System name="block45" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="2.808294857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="3.074226857"></Parameter>"
+    </System>
+    <System name="block46" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="3.074226857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="3.340158857"></Parameter>"
+    </System>
+    <System name="block47" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="3.340158857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="3.606090857"></Parameter>"
+    </System>
+    <System name="block48" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="3.606090857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="3.872022857"></Parameter>"
+    </System>
+    <System name="block49" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="3.872022857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="4.137954857"></Parameter>"
+    </System>
+    <System name="block50" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="4.137954857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="4.403886857"></Parameter>"
+    </System>
+    <System name="block51" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="4.403886857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="4.669818857"></Parameter>"
+    </System>
+    <System name="block52" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="4.669818857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="4.935750857"></Parameter>"
+    </System>
+    <System name="block53" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="4.935750857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="5.201682857"></Parameter>"
+    </System>
+    <System name="block54" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="5.201682857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="5.467614857"></Parameter>"
+    </System>
+    <System name="block55" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="5.467614857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="5.733546857"></Parameter>"
+    </System>
+    <System name="block56" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="5.733546857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="5.999478857"></Parameter>"
+    </System>
+    <System name="block57" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="5.999478857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="6.265410857"></Parameter>"
+    </System>
+    <System name="block58" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="6.265410857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="6.531342857"></Parameter>"
+    </System>
+    <System name="block59" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="6.531342857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="6.797274857"></Parameter>"
+    </System>
+    <System name="block60" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="6.797274857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="7.063206857"></Parameter>"
+    </System>
+    <System name="block61" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="7.063206857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="7.329138857"></Parameter>"
+    </System>
+    <System name="block62" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="7.329138857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="7.595070857"></Parameter>"
+    </System>
+    <System name="block63" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="7.595070857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="7.861002857"></Parameter>"
+    </System>
+    <System name="block64" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="7.861002857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="8.126934857"></Parameter>"
+    </System>
+    <System name="block65" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="8.126934857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="8.392866857"></Parameter>"
+    </System>
+    <System name="block66" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="8.392866857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="8.658798857"></Parameter>"
+    </System>
+    <System name="block67" >
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="8.658798857"></Parameter>
+        <Parameter name= "north" type="java.lang.Float"  defaultValue="8.924730857"></Parameter>"
+    </System>
+
+    
+</System>

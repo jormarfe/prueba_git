@@ -1,0 +1,65 @@
+<System xmlns="http://eumetsat.org/mtg/ssm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>Space System for the MTG-I imaging satellites.</description>
+
+    <!-- Raw telemetry parameters to be extracted from Housekeeping packets -->
+    <!-- The content of this element needs to be manually generated from the Spacecraft database -->
+
+    <!-- Raw telemetry parameters to be extracted from Housekeeping packets -->
+    <!-- The content of this element needs to be manually generated from the Spacecraft database -->
+    <!-- Parameters must have fixed locations, no group repeaters and no offset from the packet time -->
+    <!-- By default packets are identified by /PUS-Type/PUS-Sub-Type/APID name -->
+    <Parameter name="aa" type="java.lang.Integer">
+        <description>Parameter a - extracted from housekeeping packets.</description>
+        <PacketCodec packetName="/3/25/20" bitOffset="0" bitLength="8" />
+    </Parameter>
+    <Parameter name="bb" type="java.lang.Integer">
+        <description>Parameter b - extracted from housekeeping packets.</description>
+        <PacketCodec packetName="/3/25/20" bitOffset="8" bitLength="8" />
+    </Parameter>
+    <Parameter name="cc" type="java.lang.Integer">
+        <description>Parameter c - extracted from housekeeping packets.</description>
+        <PacketCodec packetName="/3/26/20" bitOffset="16" bitLength="8" />
+    </Parameter>
+    <Parameter name="dd" type="java.lang.Integer">
+        <description>Parameter c - extracted from housekeeping packets.</description>
+        <PacketCodec packetName="/3/26/20" bitOffset="24" bitLength="8" />
+    </Parameter>
+    <CalibratedParameter name="Diagnostic" rawType="java.lang.Integer" type="java.lang.Double">
+        <description>Parameter Diagnostic - extracted from housekeeping packets.</description>
+        <PacketCodec packetName="/3/26/20" bitOffset="0" bitLength="8" />
+        <PolynomialCalibration coefficients="2,1"/>
+    </CalibratedParameter>
+
+    <!-- Extraction of Packet header fields from diagnostics packet TM(3,26), APID 20-->
+    <Parameter name="apid" type="java.lang.Integer">
+        <description>Application process identifier - extracted from housekeeping packets.</description>
+        <PacketCodec packetName="/3/26/20" bitOffset="5" bitLength="11" />
+    </Parameter>
+    <Parameter name="ssc" type="java.lang.Integer">
+        <description>14-bit packet source count - extracted from housekeeping packets.</description>
+        <PacketCodec packetName="/3/26/20" bitOffset="18" bitLength="14" />
+    </Parameter>
+    <Parameter name="length" type="java.lang.Integer">
+        <description>Packet data length - extracted from housekeeping packets.</description>
+        <PacketCodec packetName="/3/26/20" bitOffset="32" bitLength="16" />
+    </Parameter>
+    <Parameter name="type" type="java.lang.Integer">
+        <description>Packet data length - extracted from housekeeping packets.</description>
+        <PacketCodec packetName="/3/26/20" bitOffset="56" bitLength="8" />
+    </Parameter>
+    <Parameter name="subtype" type="java.lang.Integer">
+        <description>Packet data length extracted from housekeeping packets.</description>
+        <PacketCodec packetName="/3/26/20" bitOffset="64" bitLength="8" />
+    </Parameter>
+    <!-- Extract the OBT cource and fine times for the packet -->
+    <Parameter name="OBTcourseTime" type="java.lang.Integer">
+        <description>OBT course time - extracted from housekeeping packets.</description>
+        <PacketCodec packetName="/3/26/20" bitOffset="80" bitLength="32" />
+    </Parameter>
+    <Parameter name="OBTfineTime" type="java.lang.Integer">
+        <description>OBT fine time - extracted from housekeeping packets.</description>
+        <PacketCodec packetName="/3/26/20" bitOffset="112" bitLength="24" />
+    </Parameter>
+
+
+</System>

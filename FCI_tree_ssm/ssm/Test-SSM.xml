@@ -1,0 +1,687 @@
+<System xmlns="http://eumetsat.org/mtg/ssm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <!-- The SSM Test branch is used to encapsulate all test related elements. -->
+
+    <description>
+        System used for integration testing. It contains Activities, Events, and Parameters using for
+        verifying
+        the processing infrastructure
+    </description>
+
+    <Parameter name="FciL1cOolCheck" type="java.lang.Integer" defaultValue="0">
+        <description>An Integer parameter with both a limit and synthetic check defined. Used in out of limits
+            integration testing.
+        </description>
+        <LimitCheck event="FirstLowOol" parent="/Test" severity="1" failCount="3" type="java.lang.Integer"
+            lowerBound="-5" />
+        <LimitCheck event="FirstHighOol" parent="/Test" severity="1" failCount="3" type="java.lang.Integer"
+            upperBound="5" />
+        <LimitCheck event="SecondLowOol" parent="/Test" severity="2" failCount="3" type="java.lang.Integer"
+            lowerBound="-10" />
+        <LimitCheck event="SecondHighOol" parent="/Test" severity="2" failCount="3" type="java.lang.Integer"
+            upperBound="10" />
+        <LimitCheck parent="/Test" severity="2" passCount="3" type="java.lang.Integer" upperBound="1000" />
+        <DeltaCheck event="DifferentialOol" parent="/Test" severity="2" failCount="3" maxDifference="3"
+            type="java.lang.Integer" />
+        <SyntheticCheck event="FciL1cOolCheckInvalid" parent="/Test" severity="3" type="java.lang.Integer"
+            formula="_MTGI_FCI_processingMode_FCIprocessingMode.getValue() == 'RTP'" />
+    </Parameter>
+
+    <Event name="FirstLowOol" severity="2" message="Parameter value less than soft limit(LowerBound)">
+        <description>Out of limits event, raised when a parameter value falls below a specific threshold.
+        </description>
+        <Argument name="path" type="java.lang.String" description="Path of the Parameter" />
+    </Event>
+    <Event name="FirstHighOol" severity="2" message="Parameter value exceeds soft limit(upperBound)">
+        <description>Out of limits event, raised when a parameter value exceeds a specific threshold.</description>
+        <Argument name="path" type="java.lang.String" description="Path of the Parameter" />
+    </Event>
+    <Event name="SecondLowOol" severity="3" message="Parameter value less than hard limit(LowerBound)">
+        <description>Out of limits event, raised when a parameter value falls below a specific threshold.
+        </description>
+        <Argument name="path" type="java.lang.String" description="Path of the Parameter" />
+    </Event>
+    <Event name="SecondHighOol" severity="3" message="Parameter value exceeds hard limit(upperBound)">
+        <description>Out of limits event, raised when a parameter value exceeds a specific threshold.
+        </description>
+        <Argument name="path" type="java.lang.String" description="Path of the Parameter" />
+    </Event>
+    <Event name="DifferentialOol" severity="3" message="Parameter value not within differential limits(Delta check)">
+        <description>Out of limits event, raised when a parameter value is not within differential limits.
+        </description>
+        <Argument name="path" type="java.lang.String" description="Path of the Parameter" />
+    </Event>
+    <Event name="FciL1cOolCheckInvalid" severity="3" message="Parameter value is invalid">
+        <description>raised when a parameter value is invalid
+        </description>
+        <Argument name="path" type="java.lang.String" description="Path of the Parameter" />
+    </Event>
+
+    <!-- Integration test -->
+    <System name="IntegrationTests">
+        <Activity name="doMultiParamChecks" urn="urn:rules:">
+            <description>Test.</description>
+            <Parameter name="multiCheckParameter" type="java.lang.Integer">
+                <description>Test parameter.</description>
+                <LimitCheck severity="1" lowerBound="0" upperBound="100" failCount="3" event="/Test/ool"
+                    type="java.lang.Integer">
+                </LimitCheck>
+            </Parameter>
+            <Artifact group="com.cgi.idpf.distribution.drools.drools-integration-tests" artifact="parameter-validation-test"
+                version="0.3.0" />
+        </Activity>
+        <Activity name="doSlurmChecks" urn="urn:rules:">
+            <description>Test.</description>
+            <Parameter name="activityCount" type="java.lang.Number">
+                <description>Test parameter.</description>
+            </Parameter>
+            <Artifact group="com.cgi.idpf.distribution.drools.drools-integration-tests" artifact="slurm-test"
+                version="0.3.0" />
+            <!-- Subscribing to ALL events under FCI -->
+            <subscribe>/MTGI/FCI</subscribe>
+        </Activity>
+    </System>
+
+    <Activity name="raiseRemoteEvent" urn="remoteScript:python:raiseEvent">
+        <description>Test script activity that raises and event at a given severity level.</description>
+        <Event name="remoteScriptEvent" message="its an event">
+            <description>Event raised by this test activity at a given severity level.</description>
+        </Event>
+        <Argument type="java.lang.Integer" name="severity" default="1" description="Severity level to raise the event at">
+            <description>What severity level this script activity will raise the remote script event at.
+            </description>
+        </Argument>
+        <Script type="python" pathToScript="../scripts/remoteTest.py" />
+    </Activity>
+
+    <Activity name="setRemoteParam" urn="remoteScript:python:setParam">
+        <description>Test script activity that sets an activity local integer parameter to a given value.
+        </description>
+        <Parameter name="remoteScriptParam" type="java.lang.Integer">
+            <description>Test activity level integer parameter.</description>
+        </Parameter>
+        <Argument type="java.lang.Integer" name="value" default="1" description="Value for the parameter">
+            <description>The value to set the parameter to when this test activity it executed.</description>
+        </Argument>
+        <Script type="python" pathToScript="../scripts/remoteTest.py" />
+    </Activity>
+
+
+    <Activity name="dasPluginTest" urn="urn:ape:das-ape" reference="activities/das_ape_ssm.xml">
+        <description>Test algorithm activity that engages the DAS system.</description>
+    </Activity>
+
+    <Activity name="HelloWorldAlgorithm" urn="urn:ape:ape-example" reference="activities/ape_example_ssm.xml">
+        <description>
+            Test algorithm activity that performs a all basic PI actions, e.g. send/receive events, set
+            parameters, and DAS I/O.
+        </description>
+    </Activity>
+
+    <Activity name="performanceStub" urn="urn:algorithm:performance-stub" reference="activities/performance_stub_ssm.xml">
+        <description>
+            Test algorithm that exercises various algorithm features, including sending and received
+            events,
+            creating
+            and settings parameters, listening to specific events, and using the Java based MCM
+            links.
+        </description>
+    </Activity>
+
+    <!-- MMI Test Types -->
+    <Event name="testEvent" severity="1" message="A test event">
+        <description>TODO</description>
+    </Event>
+
+    <Event name="testErrorEvent" severity="3" message="A test error event" enableInManoeuvre="true">
+        <description>
+            Test event at severity level 3 (error) - 1 (info) when the spacecraft is in manoeuvre.
+        </description>
+    </Event>
+
+    <Event name="packetProcessing" severity="2"
+        message="Robert Frost was born in San Francisco, California, to journalist William Prescott Frost, Jr., and Isabelle Moodie.[2] His mother was of Scottish descent, and his father descended from Nicholas Frost of Tiverton, Devon, England, who had sailed to New Hampshire in 1634 on the Wolfrana.
+Frost's father was a teacher and later an editor of the San Francisco Evening Bulletin (which later merged with The San Francisco Examiner), and an unsuccessful candidate for city tax collector. After his death on May 5, 1885, the family moved across the country to Lawrence, Massachusetts, under the patronage of (Robert's grandfather) William Frost, Sr., who was an overseer at a New England mill. Frost graduated from Lawrence High School in 1892.[4] Frost's mother joined the Swedenborgian church and had him baptized in it, but he left it as an adult.
+Although known for his later association with rural life, Frost grew up in the city, and he published his first poem in his high school's magazine. He attended Dartmouth College for two months, long enough to be accepted into the Theta Delta Chi fraternity. Frost returned home to teach and to work at various jobs, including helping his mother teach her class of unruly boys, delivering newspapers, and working in a factory maintaining carbon arc lamps. He did not enjoy these jobs, feeling his true calling was poetry.">
+        <description>TODO</description>
+        <Argument type="java.lang.String" name="arg1" default="Argument1Value">
+            <description>TODO</description>
+        </Argument>
+        <Argument type="java.lang.String" name="arg2" default="Argument2Value">
+            <description>TODO</description>
+        </Argument>
+        <Argument type="java.lang.String" name="arg3" default="Argument3Value">
+            <description>TODO</description>
+        </Argument>
+        <Argument type="java.lang.String" name="arg4" default="Argument4Value">
+            <description>TODO</description>
+        </Argument>
+        <Argument type="java.lang.String" name="arg5" default="Argument5Value">
+            <description>TODO</description>
+        </Argument>
+        <Argument type="java.lang.String" name="arg6" default="Argument6Value">
+            <description>TODO</description>
+        </Argument>
+        <Argument type="java.lang.String" name="arg7" default="Argument7Value">
+            <description>TODO</description>
+        </Argument>
+        <Argument type="java.lang.String" name="arg8" default="Argument8Value">
+            <description>TODO</description>
+        </Argument>
+        <Argument type="java.lang.String" name="arg9" default="Argument9Value">
+            <description>TODO</description>
+        </Argument>
+        <Argument type="java.lang.String" name="arg10" default="Argument10Value">
+            <description>TODO</description>
+        </Argument>
+        <Argument type="java.lang.String" name="arg11" default="Argument11Value">
+            <description>TODO</description>
+        </Argument>
+        <Argument type="java.lang.String" name="arg12" default="Argument12Value">
+            <description>TODO</description>
+        </Argument>
+    </Event>
+
+    <System name="sats">
+        <description>TODO</description>
+        <Event name="temperatureOolEvent" severity="3" message="Temperature event">
+            <description>Event raised when the temperature parameter (full path?) goes out of limit.</description>
+        </Event>
+    </System>
+
+    <Parameter name="testBool" type="java.lang.Boolean" description="Test Boolean Parameter">
+        <description>A simple boolean parameter used in integration testing.</description>
+    </Parameter>
+    <!--Parameter name="date" type="java.util.Date" / -->
+    <Parameter name="testString" type="java.lang.String">
+        <description>A simple string parameter used in integration testing.</description>
+    </Parameter>
+    <Parameter name="testFloat" type="java.lang.Float">
+        <description>A simple float parameter used in integration testing.</description>
+    </Parameter>
+    <Parameter name="testInt" type="java.lang.Integer" unit="kg">
+        <description>An Integer parameter with both a limit and synthetic check defined. Used in out of limits
+            integration testing.
+        </description>
+        <LimitCheck event="/test/ool" parent="/test" severity="2" type="java.lang.Integer" lowerBound="0"
+            upperBound="100" />
+        <SyntheticCheck event="/test/ool" parent="/test" severity="1" type="java.lang.Integer" formula="newValue &lt; 1000" />
+    </Parameter>
+
+    <Event name="ool" severity="3" message="Parameter out of limits">
+        <description>Out of limits event, raised when a parameter value passes a specific threshold.</description>
+    </Event>
+
+    <System name="TestOol">
+
+        <description>Test Ool checks </description>
+
+       <Parameter name="FciL1cOolCheck1" type="java.lang.Integer" defaultValue="100">
+            <description>Parameter with synthetic checks defined..
+            </description>
+             <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck4.getValue() >= 100) or (FciL1cOolCheck2.getValue() > -3000) or
+                         (FciL1cOolCheck3.getValue() == 150 )) and ((FciL1cOolCheck5.getValue() >= 25) or
+                         (FciL1cOolCheck6.getValue() >= 70) or (FciL1cOolCheck7.getValue() > -5000) or
+                         (FciL1cOolCheck8.getValue() >= 20) or (FciL1cOolCheck9.getValue() > 50)) and
+                         ((FciL1cOolCheck10.getValue() != 500) or (FciL1cOolCheck11.getValue() >= -100)) and
+                         ((FciL1cOolCheck12.getValue() >= 10) or (FciL1cOolCheck13.getValue() &lt; 1000) or
+                         (FciL1cOolCheck14.getValue() >= 90)) and ((FciL1cOolCheck15.getValue() != 75) or
+                         (FciL1cOolCheck16.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck4.getValue() &lt; 1100) and ((FciL1cOolCheck2.getValue() != 1000) or
+                         (FciL1cOolCheck3.getValue()  > 1500) or (FciL1cOolCheck5.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck6.getValue() &lt;=7000) and ((FciL1cOolCheck7.getValue() == 1300) or
+                         (FciL1cOolCheck8.getValue() >= 500) or (FciL1cOolCheck9.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck10.getValue() &lt; 19990) and (FciL1cOolCheck11.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck12.getValue() > 1115) or (FciL1cOolCheck13.getValue() &lt; 1800) or
+                         (FciL1cOolCheck14.getValue() == 1007) or (FciL1cOolCheck15.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck16.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </Parameter>
+
+        <SyntheticParameter name="FciL1cOolCheck2" type="java.lang.Integer" formula="FciL1cOolCheck1.getValue()"
+            defaultValue="100">
+            <description>Parameter with synthetic checks defined..
+            </description>
+           <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck1.getValue() >= 100) or (FciL1cOolCheck4.getValue() > -3000) or
+                         (FciL1cOolCheck3.getValue() == 150 )) and ((FciL1cOolCheck5.getValue() >= 25) or
+                         (FciL1cOolCheck6.getValue() >= 70) or (FciL1cOolCheck7.getValue() > -5000) or
+                         (FciL1cOolCheck8.getValue() >= 20) or (FciL1cOolCheck9.getValue() > 50)) and
+                         ((FciL1cOolCheck10.getValue() != 500) or (FciL1cOolCheck11.getValue() >= -100)) and
+                         ((FciL1cOolCheck12.getValue() >= 10) or (FciL1cOolCheck13.getValue() &lt; 1000) or
+                         (FciL1cOolCheck14.getValue() >= 90)) and ((FciL1cOolCheck15.getValue() != 75) or
+                         (FciL1cOolCheck16.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck1.getValue() &lt; 1000) and ((FciL1cOolCheck4.getValue() != 1000) or
+                         (FciL1cOolCheck3.getValue()  > 1500) or (FciL1cOolCheck5.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck6.getValue() &lt;=7000) and ((FciL1cOolCheck7.getValue() == 1300) or
+                         (FciL1cOolCheck8.getValue() >= 500) or (FciL1cOolCheck9.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck10.getValue() &lt; 19990) and (FciL1cOolCheck11.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck12.getValue() > 1115) or (FciL1cOolCheck13.getValue() &lt; 1800) or
+                         (FciL1cOolCheck14.getValue() == 1007) or (FciL1cOolCheck15.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck16.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </SyntheticParameter>
+
+        <SyntheticParameter name="FciL1cOolCheck3" type="java.lang.Integer" formula="FciL1cOolCheck1.getValue()"
+            defaultValue="100">
+            <description>Parameter with synthetic checks defined..
+            </description>
+            <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck1.getValue() >= 100) or (FciL1cOolCheck2.getValue() > -3000) or
+                         (FciL1cOolCheck4.getValue() == 150 )) and ((FciL1cOolCheck5.getValue() >= 25) or
+                         (FciL1cOolCheck6.getValue() >= 70) or (FciL1cOolCheck7.getValue() > -5000) or
+                         (FciL1cOolCheck8.getValue() >= 20) or (FciL1cOolCheck9.getValue() > 50)) and
+                         ((FciL1cOolCheck10.getValue() != 500) or (FciL1cOolCheck11.getValue() >= -100)) and
+                         ((FciL1cOolCheck12.getValue() >= 10) or (FciL1cOolCheck13.getValue() &lt; 1000) or
+                         (FciL1cOolCheck14.getValue() >= 90)) and ((FciL1cOolCheck15.getValue() != 75) or
+                         (FciL1cOolCheck16.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck1.getValue() &lt; 1000) and ((FciL1cOolCheck2.getValue() != 1000) or
+                         (FciL1cOolCheck4.getValue()  > 1500) or (FciL1cOolCheck5.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck6.getValue() &lt;= 7000) and ((FciL1cOolCheck7.getValue() == 1300) or
+                         (FciL1cOolCheck8.getValue() >= 500) or (FciL1cOolCheck9.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck10.getValue() &lt; 19990) and (FciL1cOolCheck11.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck12.getValue() > 1115) or (FciL1cOolCheck13.getValue() &lt; 1800) or
+                         (FciL1cOolCheck14.getValue() == 1007) or (FciL1cOolCheck15.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck16.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </SyntheticParameter>
+
+        <SyntheticParameter name="FciL1cOolCheck4" type="java.lang.Integer" formula="FciL1cOolCheck1.getValue()"
+            defaultValue="100">
+            <description>Parameter with synthetic checks defined..
+            </description>
+             <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck1.getValue() >= 100) or (FciL1cOolCheck2.getValue() > -3000) or
+                         (FciL1cOolCheck3.getValue() == 150 )) and ((FciL1cOolCheck5.getValue() >= 25) or
+                         (FciL1cOolCheck6.getValue() >= 70) or (FciL1cOolCheck7.getValue() > -5000) or
+                         (FciL1cOolCheck8.getValue() >= 20) or (FciL1cOolCheck9.getValue() > 50)) and
+                         ((FciL1cOolCheck10.getValue() != 500) or (FciL1cOolCheck11.getValue() >= -100)) and
+                         ((FciL1cOolCheck12.getValue() >= 10) or (FciL1cOolCheck13.getValue() &lt; 1000) or
+                         (FciL1cOolCheck14.getValue() >= 90)) and ((FciL1cOolCheck15.getValue() != 75) or
+                         (FciL1cOolCheck16.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck1.getValue() &lt; 1000) and ((FciL1cOolCheck2.getValue() != 1000) or
+                         (FciL1cOolCheck3.getValue()  > 1500) or (FciL1cOolCheck5.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck6.getValue() &lt;=7000) and ((FciL1cOolCheck7.getValue() == 1300) or
+                         (FciL1cOolCheck8.getValue() >= 500) or (FciL1cOolCheck9.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck10.getValue() &lt; 19990) and (FciL1cOolCheck11.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck12.getValue() > 1115) or (FciL1cOolCheck13.getValue() &lt; 1800) or
+                         (FciL1cOolCheck14.getValue() == 1007) or (FciL1cOolCheck15.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck16.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </SyntheticParameter>
+
+        <SyntheticParameter name="FciL1cOolCheck5" type="java.lang.Integer" formula="FciL1cOolCheck1.getValue()"
+            defaultValue="100">
+            <description>Parameter with synthetic checks defined..
+            </description>
+            <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck1.getValue() >= 100) or (FciL1cOolCheck2.getValue() > -3000) or
+                         (FciL1cOolCheck3.getValue() == 150 )) and ((FciL1cOolCheck4.getValue() >= 25) or
+                         (FciL1cOolCheck6.getValue() >= 70) or (FciL1cOolCheck7.getValue() > -5000) or
+                         (FciL1cOolCheck8.getValue() >= 20) or (FciL1cOolCheck9.getValue() > 50)) and
+                         ((FciL1cOolCheck10.getValue() != 500) or (FciL1cOolCheck11.getValue() >= -100)) and
+                         ((FciL1cOolCheck12.getValue() >= 10) or (FciL1cOolCheck13.getValue() &lt; 1000) or
+                         (FciL1cOolCheck14.getValue() >= 90)) and ((FciL1cOolCheck15.getValue() != 75) or
+                         (FciL1cOolCheck16.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck1.getValue() &lt; 1000) and ((FciL1cOolCheck2.getValue() != 1000) or
+                         (FciL1cOolCheck3.getValue()  > 1500) or (FciL1cOolCheck4.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck6.getValue() &lt;=7000) and ((FciL1cOolCheck7.getValue() == 1300) or
+                         (FciL1cOolCheck8.getValue() >= 500) or (FciL1cOolCheck9.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck10.getValue() &lt; 19990) and (FciL1cOolCheck11.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck12.getValue() > 1115) or (FciL1cOolCheck13.getValue() &lt; 1800) or
+                         (FciL1cOolCheck14.getValue() == 1007) or (FciL1cOolCheck15.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck16.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </SyntheticParameter>
+
+        <SyntheticParameter name="FciL1cOolCheck6" type="java.lang.Integer" formula="FciL1cOolCheck1.getValue()"
+            defaultValue="100">
+            <description>Parameter with synthetic checks defined..
+            </description>
+            <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck1.getValue() >= 100) or (FciL1cOolCheck2.getValue() > -3000) or
+                         (FciL1cOolCheck3.getValue() == 150 )) and ((FciL1cOolCheck5.getValue() >= 25) or
+                         (FciL1cOolCheck4.getValue() >= 70) or (FciL1cOolCheck7.getValue() > -5000) or
+                         (FciL1cOolCheck8.getValue() >= 20) or (FciL1cOolCheck9.getValue() > 50)) and
+                         ((FciL1cOolCheck10.getValue() != 500) or (FciL1cOolCheck11.getValue() >= -100)) and
+                         ((FciL1cOolCheck12.getValue() >= 10) or (FciL1cOolCheck13.getValue() &lt; 1000) or
+                         (FciL1cOolCheck14.getValue() >= 90)) and ((FciL1cOolCheck15.getValue() != 75) or
+                         (FciL1cOolCheck16.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck1.getValue() &lt; 1000) and ((FciL1cOolCheck2.getValue() != 1000) or
+                         (FciL1cOolCheck3.getValue()  > 1500) or (FciL1cOolCheck5.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck4.getValue() &lt;=7000) and ((FciL1cOolCheck7.getValue() == 1300) or
+                         (FciL1cOolCheck8.getValue() >= 500) or (FciL1cOolCheck9.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck10.getValue() &lt; 19990) and (FciL1cOolCheck11.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck12.getValue() > 1115) or (FciL1cOolCheck13.getValue() &lt; 1800) or
+                         (FciL1cOolCheck14.getValue() == 1007) or (FciL1cOolCheck15.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck16.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </SyntheticParameter>
+
+        <SyntheticParameter name="FciL1cOolCheck7" type="java.lang.Integer" formula="FciL1cOolCheck1.getValue()"
+            defaultValue="100">
+            <description>Parameter with synthetic checks defined..
+            </description>
+           <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck1.getValue() >= 100) or (FciL1cOolCheck2.getValue() > -3000) or
+                         (FciL1cOolCheck3.getValue() == 150 )) and ((FciL1cOolCheck5.getValue() >= 25) or
+                         (FciL1cOolCheck6.getValue() >= 70) or (FciL1cOolCheck4.getValue() > -5000) or
+                         (FciL1cOolCheck8.getValue() >= 20) or (FciL1cOolCheck9.getValue() > 50)) and
+                         ((FciL1cOolCheck10.getValue() != 500) or (FciL1cOolCheck11.getValue() >= -100)) and
+                         ((FciL1cOolCheck12.getValue() >= 10) or (FciL1cOolCheck13.getValue() &lt; 1000) or
+                         (FciL1cOolCheck14.getValue() >= 90)) and ((FciL1cOolCheck15.getValue() != 75) or
+                         (FciL1cOolCheck16.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck1.getValue() &lt; 1000) and ((FciL1cOolCheck2.getValue() != 1000) or
+                         (FciL1cOolCheck3.getValue()  > 1500) or (FciL1cOolCheck5.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck6.getValue() &lt;=7000) and ((FciL1cOolCheck4.getValue() == 1300) or
+                         (FciL1cOolCheck8.getValue() >= 500) or (FciL1cOolCheck9.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck10.getValue() &lt; 19990) and (FciL1cOolCheck11.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck12.getValue() > 1115) or (FciL1cOolCheck13.getValue() &lt; 1800) or
+                         (FciL1cOolCheck14.getValue() == 1007) or (FciL1cOolCheck15.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck16.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </SyntheticParameter>
+
+        <SyntheticParameter name="FciL1cOolCheck8" type="java.lang.Integer" formula="FciL1cOolCheck1.getValue()"
+            defaultValue="100">
+            <description>Parameter with synthetic checks defined..
+            </description>
+              <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck1.getValue() >= 100) or (FciL1cOolCheck2.getValue() > -3000) or
+                         (FciL1cOolCheck3.getValue() == 150 )) and ((FciL1cOolCheck5.getValue() >= 25) or
+                         (FciL1cOolCheck6.getValue() >= 70) or (FciL1cOolCheck7.getValue() > -5000) or
+                         (FciL1cOolCheck4.getValue() >= 20) or (FciL1cOolCheck9.getValue() > 50)) and
+                         ((FciL1cOolCheck10.getValue() != 500) or (FciL1cOolCheck11.getValue() >= -100)) and
+                         ((FciL1cOolCheck12.getValue() >= 10) or (FciL1cOolCheck13.getValue() &lt; 1000) or
+                         (FciL1cOolCheck14.getValue() >= 90)) and ((FciL1cOolCheck15.getValue() != 75) or
+                         (FciL1cOolCheck16.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck1.getValue() &lt; 1000) and ((FciL1cOolCheck2.getValue() != 1000) or
+                         (FciL1cOolCheck3.getValue()  > 1500) or (FciL1cOolCheck5.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck6.getValue() &lt;=7000) and ((FciL1cOolCheck7.getValue() == 1300) or
+                         (FciL1cOolCheck4.getValue() >= 500) or (FciL1cOolCheck9.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck10.getValue() &lt; 19990) and (FciL1cOolCheck11.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck12.getValue() > 1115) or (FciL1cOolCheck13.getValue() &lt; 1800) or
+                         (FciL1cOolCheck14.getValue() == 1007) or (FciL1cOolCheck15.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck16.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </SyntheticParameter>
+
+        <SyntheticParameter name="FciL1cOolCheck9" type="java.lang.Integer" formula="FciL1cOolCheck1.getValue()"
+            defaultValue="100">
+            <description>Parameter with synthetic checks defined..
+            </description>
+             <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck1.getValue() >= 100) or (FciL1cOolCheck2.getValue() > -3000) or
+                         (FciL1cOolCheck3.getValue() == 150 )) and ((FciL1cOolCheck5.getValue() >= 25) or
+                         (FciL1cOolCheck6.getValue() >= 70) or (FciL1cOolCheck7.getValue() > -5000) or
+                         (FciL1cOolCheck8.getValue() >= 20) or (FciL1cOolCheck4.getValue() > 50)) and
+                         ((FciL1cOolCheck10.getValue() != 500) or (FciL1cOolCheck11.getValue() >= -100)) and
+                         ((FciL1cOolCheck12.getValue() >= 10) or (FciL1cOolCheck13.getValue() &lt; 1000) or
+                         (FciL1cOolCheck14.getValue() >= 90)) and ((FciL1cOolCheck15.getValue() != 75) or
+                         (FciL1cOolCheck16.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck1.getValue() &lt; 1000) and ((FciL1cOolCheck2.getValue() != 1000) or
+                         (FciL1cOolCheck3.getValue()  > 1500) or (FciL1cOolCheck5.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck6.getValue() &lt;=7000) and ((FciL1cOolCheck7.getValue() == 1300) or
+                         (FciL1cOolCheck8.getValue() >= 500) or (FciL1cOolCheck4.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck10.getValue() &lt; 19990) and (FciL1cOolCheck11.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck12.getValue() > 1115) or (FciL1cOolCheck13.getValue() &lt; 1800) or
+                         (FciL1cOolCheck14.getValue() == 1007) or (FciL1cOolCheck15.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck16.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </SyntheticParameter>
+
+        <SyntheticParameter name="FciL1cOolCheck10" type="java.lang.Integer" formula="FciL1cOolCheck1.getValue()"
+            defaultValue="100">
+            <description>Parameter with synthetic checks defined..
+            </description>
+            <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck1.getValue() >= 100) or (FciL1cOolCheck2.getValue() > -3000) or
+                         (FciL1cOolCheck3.getValue() == 150 )) and ((FciL1cOolCheck5.getValue() >= 25) or
+                         (FciL1cOolCheck6.getValue() >= 70) or (FciL1cOolCheck7.getValue() > -5000) or
+                         (FciL1cOolCheck8.getValue() >= 20) or (FciL1cOolCheck9.getValue() > 50)) and
+                         ((FciL1cOolCheck4.getValue() != 500) or (FciL1cOolCheck11.getValue() >= -100)) and
+                         ((FciL1cOolCheck12.getValue() >= 10) or (FciL1cOolCheck13.getValue() &lt; 1000) or
+                         (FciL1cOolCheck14.getValue() >= 90)) and ((FciL1cOolCheck15.getValue() != 75) or
+                         (FciL1cOolCheck16.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck1.getValue() &lt; 1000) and ((FciL1cOolCheck2.getValue() != 1000) or
+                         (FciL1cOolCheck3.getValue()  > 1500) or (FciL1cOolCheck5.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck6.getValue() &lt;=7000) and ((FciL1cOolCheck7.getValue() == 1300) or
+                         (FciL1cOolCheck8.getValue() >= 500) or (FciL1cOolCheck9.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck4.getValue() &lt; 19990) and (FciL1cOolCheck11.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck12.getValue() > 1115) or (FciL1cOolCheck13.getValue() &lt; 1800) or
+                         (FciL1cOolCheck14.getValue() == 1007) or (FciL1cOolCheck15.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck16.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </SyntheticParameter>
+
+        <SyntheticParameter name="FciL1cOolCheck11" type="java.lang.Integer" formula="FciL1cOolCheck1.getValue()"
+            defaultValue="100">
+            <description>Parameter with synthetic checks defined..
+            </description>
+            <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck1.getValue() >= 100) or (FciL1cOolCheck2.getValue() > -3000) or
+                         (FciL1cOolCheck3.getValue() == 150 )) and ((FciL1cOolCheck5.getValue() >= 25) or
+                         (FciL1cOolCheck6.getValue() >= 70) or (FciL1cOolCheck7.getValue() > -5000) or
+                         (FciL1cOolCheck8.getValue() >= 20) or (FciL1cOolCheck9.getValue() > 50)) and
+                         ((FciL1cOolCheck10.getValue() != 500) or (FciL1cOolCheck4.getValue() >= -100)) and
+                         ((FciL1cOolCheck12.getValue() >= 10) or (FciL1cOolCheck13.getValue() &lt; 1000) or
+                         (FciL1cOolCheck14.getValue() >= 90)) and ((FciL1cOolCheck15.getValue() != 75) or
+                         (FciL1cOolCheck16.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck1.getValue() &lt; 1000) and ((FciL1cOolCheck2.getValue() != 1000) or
+                         (FciL1cOolCheck3.getValue()  > 1500) or (FciL1cOolCheck5.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck6.getValue() &lt;=7000) and ((FciL1cOolCheck7.getValue() == 1300) or
+                         (FciL1cOolCheck8.getValue() >= 500) or (FciL1cOolCheck9.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck10.getValue() &lt; 19990) and (FciL1cOolCheck4.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck12.getValue() > 1115) or (FciL1cOolCheck13.getValue() &lt; 1800) or
+                         (FciL1cOolCheck14.getValue() == 1007) or (FciL1cOolCheck15.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck16.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </SyntheticParameter>
+
+        <SyntheticParameter name="FciL1cOolCheck12" type="java.lang.Integer" formula="FciL1cOolCheck1.getValue()"
+            defaultValue="100">
+            <description>Parameter with synthetic checks defined..
+            </description>
+             <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck1.getValue() >= 100) or (FciL1cOolCheck2.getValue() > -3000) or
+                         (FciL1cOolCheck3.getValue() == 150 )) and ((FciL1cOolCheck5.getValue() >= 25) or
+                         (FciL1cOolCheck6.getValue() >= 70) or (FciL1cOolCheck7.getValue() > -5000) or
+                         (FciL1cOolCheck8.getValue() >= 20) or (FciL1cOolCheck9.getValue() > 50)) and
+                         ((FciL1cOolCheck10.getValue() != 500) or (FciL1cOolCheck11.getValue() >= -100)) and
+                         ((FciL1cOolCheck4.getValue() >= 10) or (FciL1cOolCheck13.getValue() &lt; 1000) or
+                         (FciL1cOolCheck14.getValue() >= 90)) and ((FciL1cOolCheck15.getValue() != 75) or
+                         (FciL1cOolCheck16.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck1.getValue() &lt; 1000) and ((FciL1cOolCheck2.getValue() != 1000) or
+                         (FciL1cOolCheck3.getValue()  > 1500) or (FciL1cOolCheck5.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck6.getValue() &lt;=7000) and ((FciL1cOolCheck7.getValue() == 1300) or
+                         (FciL1cOolCheck8.getValue() >= 500) or (FciL1cOolCheck9.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck10.getValue() &lt; 19990) and (FciL1cOolCheck11.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck4.getValue() > 1115) or (FciL1cOolCheck13.getValue() &lt; 1800) or
+                         (FciL1cOolCheck14.getValue() == 1007) or (FciL1cOolCheck15.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck16.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </SyntheticParameter>
+
+        <SyntheticParameter name="FciL1cOolCheck13" type="java.lang.Integer" formula="FciL1cOolCheck1.getValue()"
+            defaultValue="100">
+            <description>Parameter with synthetic checks defined..
+            </description>
+              <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck1.getValue() >= 100) or (FciL1cOolCheck2.getValue() > -3000) or
+                         (FciL1cOolCheck3.getValue() == 150 )) and ((FciL1cOolCheck5.getValue() >= 25) or
+                         (FciL1cOolCheck6.getValue() >= 70) or (FciL1cOolCheck7.getValue() > -5000) or
+                         (FciL1cOolCheck8.getValue() >= 20) or (FciL1cOolCheck9.getValue() > 50)) and
+                         ((FciL1cOolCheck10.getValue() != 500) or (FciL1cOolCheck11.getValue() >= -100)) and
+                         ((FciL1cOolCheck12.getValue() >= 10) or (FciL1cOolCheck4.getValue() &lt; 1000) or
+                         (FciL1cOolCheck14.getValue() >= 90)) and ((FciL1cOolCheck15.getValue() != 75) or
+                         (FciL1cOolCheck16.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck1.getValue() &lt; 1000) and ((FciL1cOolCheck2.getValue() != 1000) or
+                         (FciL1cOolCheck3.getValue()  > 1500) or (FciL1cOolCheck5.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck6.getValue() &lt;=7000) and ((FciL1cOolCheck7.getValue() == 1300) or
+                         (FciL1cOolCheck8.getValue() >= 500) or (FciL1cOolCheck9.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck10.getValue() &lt; 19990) and (FciL1cOolCheck11.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck12.getValue() > 1115) or (FciL1cOolCheck4.getValue() &lt; 1800) or
+                         (FciL1cOolCheck14.getValue() == 1007) or (FciL1cOolCheck15.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck16.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </SyntheticParameter>
+
+        <SyntheticParameter name="FciL1cOolCheck14" type="java.lang.Integer" formula="FciL1cOolCheck1.getValue()"
+            defaultValue="100">
+            <description>Parameter with synthetic checks defined..
+            </description>
+              <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck1.getValue() >= 100) or (FciL1cOolCheck2.getValue() > -3000) or
+                         (FciL1cOolCheck3.getValue() == 150 )) and ((FciL1cOolCheck5.getValue() >= 25) or
+                         (FciL1cOolCheck6.getValue() >= 70) or (FciL1cOolCheck7.getValue() > -5000) or
+                         (FciL1cOolCheck8.getValue() >= 20) or (FciL1cOolCheck9.getValue() > 50)) and
+                         ((FciL1cOolCheck10.getValue() != 500) or (FciL1cOolCheck11.getValue() >= -100)) and
+                         ((FciL1cOolCheck12.getValue() >= 10) or (FciL1cOolCheck13.getValue() &lt; 1000) or
+                         (FciL1cOolCheck4.getValue() >= 90)) and ((FciL1cOolCheck15.getValue() != 75) or
+                         (FciL1cOolCheck16.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck1.getValue() &lt; 1000) and ((FciL1cOolCheck2.getValue() != 1000) or
+                         (FciL1cOolCheck3.getValue()  > 1500) or (FciL1cOolCheck5.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck6.getValue() &lt;=7000) and ((FciL1cOolCheck7.getValue() == 1300) or
+                         (FciL1cOolCheck8.getValue() >= 500) or (FciL1cOolCheck9.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck10.getValue() &lt; 19990) and (FciL1cOolCheck11.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck12.getValue() > 1115) or (FciL1cOolCheck13.getValue() &lt; 1800) or
+                         (FciL1cOolCheck4.getValue() == 1007) or (FciL1cOolCheck15.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck16.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </SyntheticParameter>
+
+        <SyntheticParameter name="FciL1cOolCheck15" type="java.lang.Integer" formula="FciL1cOolCheck1.getValue()"
+            defaultValue="100">
+            <description>Parameter with synthetic checks defined..
+            </description>
+             <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck1.getValue() >= 100) or (FciL1cOolCheck2.getValue() > -3000) or
+                         (FciL1cOolCheck3.getValue() == 150 )) and ((FciL1cOolCheck5.getValue() >= 25) or
+                         (FciL1cOolCheck6.getValue() >= 70) or (FciL1cOolCheck7.getValue() > -5000) or
+                         (FciL1cOolCheck8.getValue() >= 20) or (FciL1cOolCheck9.getValue() > 50)) and
+                         ((FciL1cOolCheck10.getValue() != 500) or (FciL1cOolCheck11.getValue() >= -100)) and
+                         ((FciL1cOolCheck12.getValue() >= 10) or (FciL1cOolCheck13.getValue() &lt; 1000) or
+                         (FciL1cOolCheck14.getValue() >= 90)) and ((FciL1cOolCheck4.getValue() != 75) or
+                         (FciL1cOolCheck16.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck1.getValue() &lt; 1000) and ((FciL1cOolCheck2.getValue() != 1000) or
+                         (FciL1cOolCheck3.getValue()  > 1500) or (FciL1cOolCheck5.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck6.getValue() &lt;=7000) and ((FciL1cOolCheck7.getValue() == 1300) or
+                         (FciL1cOolCheck8.getValue() >= 500) or (FciL1cOolCheck9.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck10.getValue() &lt; 19990) and (FciL1cOolCheck11.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck12.getValue() > 1115) or (FciL1cOolCheck13.getValue() &lt; 1800) or
+                         (FciL1cOolCheck14.getValue() == 1007) or (FciL1cOolCheck4.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck16.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </SyntheticParameter>
+
+        <SyntheticParameter name="FciL1cOolCheck16" type="java.lang.Integer" formula="FciL1cOolCheck1.getValue()"
+            defaultValue="100">
+            <description>Parameter with synthetic checks defined.
+            </description>
+             <SyntheticCheck event="FciL1LowOolCheck" parent="/Test/TestOol" severity="1" type="java.lang.Integer"
+                formula="((FciL1cOolCheck1.getValue() >= 100) or (FciL1cOolCheck2.getValue() > -3000) or
+                         (FciL1cOolCheck3.getValue() == 150 )) and ((FciL1cOolCheck5.getValue() >= 25) or
+                         (FciL1cOolCheck6.getValue() >= 70) or (FciL1cOolCheck7.getValue() > -5000) or
+                         (FciL1cOolCheck8.getValue() >= 20) or (FciL1cOolCheck9.getValue() > 50)) and
+                         ((FciL1cOolCheck10.getValue() != 500) or (FciL1cOolCheck11.getValue() >= -100)) and
+                         ((FciL1cOolCheck12.getValue() >= 10) or (FciL1cOolCheck13.getValue() &lt; 1000) or
+                         (FciL1cOolCheck14.getValue() >= 90)) and ((FciL1cOolCheck15.getValue() != 75) or
+                         (FciL1cOolCheck4.getValue() >= -10000))  and (newValue >= 100)"/>
+             <SyntheticCheck event="FciL1OolCheckInvalid" parent="/Test/TestOol" severity="2" type="java.lang.Integer"
+                formula="(FciL1cOolCheck1.getValue() &lt; 1000) and ((FciL1cOolCheck2.getValue() != 1000) or
+                         (FciL1cOolCheck3.getValue()  > 1500) or (FciL1cOolCheck5.getValue() &lt; 10000)) and
+                         (FciL1cOolCheck6.getValue() &lt;=7000) and ((FciL1cOolCheck7.getValue() == 1300) or
+                         (FciL1cOolCheck8.getValue() >= 500) or (FciL1cOolCheck9.getValue() &lt; 1950)) and
+                         (FciL1cOolCheck10.getValue() &lt; 19990) and (FciL1cOolCheck11.getValue() &lt; 1500) and
+                         ((FciL1cOolCheck12.getValue() > 1115) or (FciL1cOolCheck13.getValue() &lt; 1800) or
+                         (FciL1cOolCheck14.getValue() == 1007) or (FciL1cOolCheck15.getValue() &lt; 1000)) and
+                         (FciL1cOolCheck4.getValue() &lt; 150000) and (newValue &lt; 1000)"/>
+        </SyntheticParameter>
+
+       <Event name="FciL1LowOolCheck" severity="2" message="Parameter value with path ${path} failed the synthetic check">
+            <description>Raised when a synthetic check fails.
+            </description>
+            <Argument name="path" type="java.lang.String" description="Path of the Parameter" />
+        </Event>
+
+        <Event name="FciL1OolCheckInvalid" severity="3" message="Parameter value with path ${path} failed the synthetic check">
+            <description>Raised when a synthetic check fails.
+            </description>
+            <Argument name="path" type="java.lang.String" description="Path of the Parameter" />
+        </Event>
+
+    </System>
+
+    <TcpMcLink name="testServerLink" hostname="127.0.0.1" port="5478" clientNumRetries="10"
+        clientRetryInterval="1000" clientTimeout="1" clientSendBuffer="10" clientReadBuffer="32768000"
+        serverMaxSessions="3" serverTimeout="1200">
+    </TcpMcLink>
+
+
+    <Activity name="validateMcmLinksFromAlgorithm" urn="script:python">
+        <description>
+            Test script activity that uses the performance algorithm to validate the use of a
+            MCM based
+            links.
+        </description>
+        <Script type="python" pathToScript="../scripts/validateLink.py" />
+    </Activity>
+
+    <!-- Activity for test procedure pi-ivv-12a -->
+    <Activity name="testArgsValue12a" urn="script:python">
+        <description>Dummy activity to verify that MMI prevents users for using
+            invalid argument values
+        </description>
+
+
+        <Argument type="java.lang.String" name="abcParamTest" default="a" description="Enumerated for the parameter">
+            <allowed>a</allowed>
+            <allowed>b</allowed>
+            <allowed>c</allowed>
+        </Argument>
+        <Argument name="disParamTest" type="java.lang.Integer" default="1">
+            <illegal>4</illegal>
+            <illegal>5</illegal>
+        </Argument>
+        <Argument name="allowedParamTest" type="java.lang.Double" default="9.3" lowerBound="9.2" upperBound="9.8" />
+        <Argument name="testBool" type="java.lang.Boolean" description="Test Boolean Parameter" />
+
+        <Script type="python" pathToScript="../scripts/validateLink.py" />
+    </Activity>
+
+    <Parameter name="AlmSound" type="java.lang.Boolean" defaultValue="false">
+        <description>Flag that indicates if Alarm sound is enabled or not.</description>
+    </Parameter>
+
+    <!-- Activity to test failure of the stubs -->
+    <Activity name="FciFailFciApe" urn="urn:ape:fci-fail-stub" reference="activities/fci_fail_stub_ssm.xml">
+        <description>Level 1 B FCI algorithm. This is a fake/stub.</description>
+    </Activity>
+
+    <!-- Failover rules -->
+    <Parameter name="FciStubFailover" type="java.lang.Boolean" defaultValue="true">
+        <description>Flag that indicates failover handling is enabled or not.</description>
+    </Parameter>
+
+    <Activity name="StartFciFailStub" urn="urn:rules:">
+
+        <Artifact group="com.cgi.idpf.distribution.drools" artifact="fci-fail" version="0.9.0" />
+        <!-- Amount of run duration that should be slept -->
+        <Argument name="sleepTimeSec" type="java.lang.Integer" default="30">
+            <description> Sleep Duration</description>
+        </Argument>
+
+        <!-- Subscribing to ALL events under /TEST/ -->
+        <subscribe>/Test</subscribe>
+    </Activity>
+
+    <Activity name="noPlataux" urn="urn:rules:">
+        <description>
+            Enables a rule, which starts L1bFciApe with NOPLATAUX flag indicating that data were corrupted.
+        </description>
+        <Artifact group="com.cgi.idpf.distribution.drools" artifact="no-plataux" version="0.9.0" />
+        <subscribe>/MTGI</subscribe>
+    </Activity>
+
+</System>

@@ -1,0 +1,45 @@
+<!-- MCM monitoring -->
+<!-- Parameters and events for the monitoring of MCM (used by SNMP) -->
+<System xmlns="http://eumetsat.org/mtg/ssm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>Space system elements specific to monitoring the processing infrastructure system itself.</description>
+
+    <Parameter name="status" type="java.lang.String" defaultValue="UNDEFINED">
+        <description>A textual description of the status of the system at the current time.</description>
+    </Parameter>
+    
+    <Activity name="Archiver" urn="urn:archive:ARCHIVE">
+        <description>Root archiver activity for persisting data to files.</description>
+        <Argument type="java.lang.String" name="partition" default="MTGI">
+            <description>Files are archived in a sub-folder named from this argument.</description>
+        </Argument>
+        <Argument type="java.lang.String" name="type" default="xml">
+            <description>The Archive file type. This can be XML or BIN (Binary).</description>
+        </Argument>
+        <Argument type="java.lang.Long" name="autoflush" default="100" unit="ms">
+            <description>
+                File writes to the archive will be flushed after this timeout. The units are milliseconds.
+            </description>
+        </Argument>
+        <Argument type="java.lang.String" name="filter" default="">
+            <description>Python filter for ORD, defaults to no filtering</description>
+        </Argument>
+        <Argument type="java.lang.Long" name="rotationSize" default="5242880" unit="kB">
+            <description>Maximum file size of ORD files in bytes</description>
+        </Argument>
+        <Argument type="java.lang.Long" name="rotationTime" default="600000" unit="ms">
+            <description>Maximum age of an ORD file in milliseconds</description>
+        </Argument>
+        <subscribe>/</subscribe>
+    </Activity>
+    
+    <Activity name="OrdDissemination" urn="urn:archive:DISS?linkPath=/links/mc/mme/mon/idpfmonOut">
+        <description>Disseminates archived ORD to the MON</description>
+        <Argument type="java.lang.Long" name="dissPeriod" default="300000" unit="ms">
+            <description>File writes to the archive will be flushed after this timeout. The units are milliseconds.</description>
+        </Argument>
+        <Argument type="java.lang.String" name="dissFtpUser" default="MON">
+            <description>Username for FTP dissemination of ORD.
+            </description>
+        </Argument>
+    </Activity>
+</System>

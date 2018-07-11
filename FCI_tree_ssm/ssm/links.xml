@@ -1,0 +1,753 @@
+<!-- MCM Links -->
+<System xmlns="http://eumetsat.org/mtg/ssm" xmlns:ssm="http://eumetsat.org/mtg/ssm"
+    xsi:schemaLocation="http://eumetsat.org/mtg/ssm ../../../../../../PI-Core/SSM/src/main/resources/ssm.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+    <description>All of the Common links required to operate the Processing Infrastructure</description>
+
+    <System name="mc">
+        <description>The monitored and controlled (MC) links sub-system.</description>
+        <!-- All MC links have the following inbuilt parameters: The client and server status is combined into an overall
+            link status "Status" = Status of the TCP MC link, one of: INITIALISING, DISCONNECTED, CONNECTING, CONNECTED, DISCONNECTING
+            "ClientStatus" = The status of the client; one of: INITIALISING, DISCONNECTED, CONNECTING, CONNECTED, DISCONNECTING Link
+            Control - Control of the links is via the linkCommand under the link. This should either be set to CONNECT_LINK or DISCONNECT_LINK -->
+
+        <!-- Activity for setting all LinkCommands -->
+        <Activity name="setMcLinks" urn="script:python:setAllLinks">
+            <description>Activity to allow the user to set all the monitored and controlled (MC) links</description>
+
+            <!-- Arguments of the activity -->
+            <!-- Using a string enumeration which is latter converted to a LinkCommands -->
+            <Argument type="java.lang.String" name="MDA2IDPF_HKTM" default="CONNECT_LINK" description="Enumerated for the parameter">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="MDA2IDPF_DUMP" default="CONNECT_LINK" description="Enumerated for the parameter">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="MDA2IDPF_AUX" default="CONNECT_LINK" description="Enumerated for the parameter">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="MDA2IDPF_FCI" default="CONNECT_LINK" description="Enumerated for the parameter">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="MDA2IDPF_LI" default="CONNECT_LINK" description="Enumerated for the parameter">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="MON2IDPF" default="CONNECT_LINK" description="Enumerated for the parameter">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="IDPF2MON" default="CONNECT_LINK" description="Enumerated for the parameter">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="IDPF2FACMON" default="CONNECT_LINK" description="Enumerated for the parameter">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="IDPF2DAC" default="CONNECT_LINK" description="Enumerated for the parameter">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="DIS2IDPF" default="CONNECT_LINK" description="Enumerated for the parameter">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="IDPF2DIS" default="CONNECT_LINK" description="Enumerated for the parameter">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="MOF2IDPF" default="CONNECT_LINK" description="Enumerated for the parameter">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="IDPF2MOF" default="CONNECT_LINK" description="Enumerated for the parameter">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="IDPF2L2PF_PEER" default="CONNECT_LINK" description="Enumerated for the parameter">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="IDPF2L2PF_LOWER" default="CONNECT_LINK" description="Enumerated for the parameter">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+
+            <Script type="python" pathToScript="../scripts/setLink.py" />
+        </Activity>
+
+        <!-- Activity for setting a LinkCommand -->
+        <Activity name="setLink" urn="script:python:setLink">
+            <description>Setting the link command of a single link</description>
+
+            <Argument type="java.lang.String" name="paramPath" default="" description="The linkCommand to set">
+                <allowed>/links/mc/mda/SatKaHKTM/hktm/linkCommand</allowed>
+                <allowed>/links/mc/mda/SatKaDumpReport/dump/linkCommand</allowed>
+                <allowed>/links/mc/mda/PlatformAUXData/plat/linkCommand</allowed>
+                <allowed>/links/mc/mda/FciInstData/fci/linkCommand</allowed>
+                <allowed>/links/mc/mda/LiInstData/li/linkCommand</allowed>
+                <allowed>/links/mc/mme/mon/in/linkCommand</allowed>
+                <allowed>/links/mc/mme/mon/idpfmonOut/linkCommand</allowed>
+                <allowed>/links/mc/mme/mon/facmonOut/linkCommand</allowed>
+                <allowed>/links/mc/mme/dac/out/linkCommand</allowed>
+                <allowed>/links/mc/mme/dis/in/linkCommand</allowed>
+                <allowed>/links/mc/mme/dis/out/linkCommand</allowed>
+                <allowed>/links/mc/mof/in/linkCommand</allowed>
+                <allowed>/links/mc/mof/mofFtp/linkCommand</allowed>
+                <allowed>/links/mc/l2pf/peer/linkCommand</allowed>
+                <allowed>/links/mc/l2pf/lower/linkCommand</allowed>
+            </Argument>
+
+            <!-- org.eumetsat.pi.ssm.das.links.LinkCommands -->
+            <!-- Using a string enumeration which is latter converted to a LinkCommands -->
+            <Argument type="java.lang.String" name="value" default="CONNECT_LINK">
+                <description>use of enum</description>
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Script type="python" pathToScript="../scripts/setLink.py" />
+        </Activity>
+
+        <!-- Activity for Configuring LinkCommands -->
+        <Activity name="configureMcLink" urn="script:python:reconfLink">
+            <description>Activity to allow the user to set configure a link</description>
+
+            <Argument type="java.lang.String" name="Link" default="" description="Link to be configured">
+                <allowed>/links/mc/mda/SatKaHKTM/hktm</allowed>
+                <allowed>/links/mc/mda/SatKaDumpReport/dump</allowed>
+                <allowed>/links/mc/mda/PlatformAUXData/plat</allowed>
+                <allowed>/links/mc/mda/FciInstData/fci</allowed>
+                <allowed>/links/mc/mda/LiInstData/li</allowed>
+                <allowed>/links/mc/mme/mon/in</allowed>
+                <allowed>/links/mc/mme/mon/idpfmonOut</allowed>
+                <allowed>/links/mc/mme/mon/facmonOut</allowed>
+                <allowed>/links/mc/mme/dac/out</allowed>
+                <allowed>/links/mc/mme/dis/in</allowed>
+                <allowed>/links/mc/mme/dis/out</allowed>
+                <allowed>/links/mc/mof/in</allowed>
+                <allowed>/links/mc/mof/mofFtp</allowed>
+                <allowed>/links/mc/l2pf/peer</allowed>
+                <allowed>/links/mc/l2pf/lower</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="HostName">
+                <description>Host name</description>
+            </Argument>
+            <Argument type="java.lang.Integer" name="Port" default="11500">
+                <description>Port Number</description>
+            </Argument>
+            <Argument type="java.lang.Integer" name="NumRetries" default="3">
+                <description>Number of retries</description>
+            </Argument>
+            <Argument type="java.lang.Long" name="RetryWait" default="3000" unit="milliseconds">
+                <description>Retry wait duration</description>
+            </Argument>
+            <Argument type="java.lang.Integer" name="Timeout" default="10000" unit="milliseconds">
+                <description>Retry Timeout</description>
+            </Argument>
+            <Argument type="java.lang.Long" name="MaxBandwidth" default="0">
+                <description>The maximum bandwidth used to throttle the transfer.  Zero means do not throttle.</description>
+            </Argument>
+            <Argument type="java.lang.Boolean" name="SupportRecovery" default="false">
+                <description>Whether the link support FTP recovery (outbound FTP only)</description>
+            </Argument>
+            <Argument type="java.lang.String" name="RelayLinkPath">
+                <description>The optional link in which to replicate FTP put transfers on</description>
+                <allowed></allowed>
+                <allowed>/links/mc/mme/mon/idpfmonOut</allowed>
+                <allowed>/links/mc/mme/mon/facmonOut</allowed>
+                <allowed>/links/mc/mme/dac/out</allowed>
+                <allowed>/links/mc/mme/dis/out</allowed>
+                <allowed>/links/mc/mof/mofFtp</allowed>
+                <allowed>/links/mc/l2pf/peer</allowed>
+                <allowed>/links/mc/l2pf/lower</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="RelayUsername">
+                <description>The username to use for the relay link if one is given</description>
+            </Argument>
+            <Argument type="java.lang.String" name="State" default="CONNECT_LINK" description="Connection State">
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+
+            <Script type="python" pathToScript="../scripts/setLink.py" />
+        </Activity>
+
+        <Activity name="RECONF2NOMINAL" urn="script:python:reconfLinkL0Fci">
+            <description>Activity which redirects FCI connection to MDA-SIM prime.</description>
+            <Argument type="java.lang.String" name="HostName" default="IIPIDEV-W01">
+                <description>Host name</description>
+            </Argument>
+            <Argument type="java.lang.Integer" name="Port" default="11500">
+                <description>Port Number</description>
+            </Argument>
+            <Argument type="java.lang.Integer" name="NumRetries" default="3">
+                <description>Number of retries</description>
+            </Argument>
+            <Argument type="java.lang.Long" name="RetryWait" default="3000" unit="milliseconds">
+                <description>Retry wait duration</description>
+            </Argument>
+            <Argument type="java.lang.Integer" name="Timeout" default="10000" unit="milliseconds">
+                <description>Retry Timeout</description>
+            </Argument>
+            <Argument type="java.lang.Long" name="MaxBandwidth" default="0">
+                <description>The maximum bandwidth used to throttle the transfer.  Zero means do not throttle.</description>
+            </Argument>
+            <Argument type="java.lang.Boolean" name="SupportRecovery" default="false">
+                <description>Whether the link support FTP recovery (outbound FTP only)</description>
+            </Argument>
+            <Argument type="java.lang.String" name="RelayLinkPath" default="">
+                <description>The optional link in which to replicate FTP put transfers on</description>
+                <allowed></allowed>
+                <allowed>/links/mc/mme/mon/idpfmonOut</allowed>
+                <allowed>/links/mc/mme/mon/facmonOut</allowed>
+                <allowed>/links/mc/mme/dac/out</allowed>
+                <allowed>/links/mc/mme/dis/out</allowed>
+                <allowed>/links/mc/mof/mofFtp</allowed>
+                <allowed>/links/mc/l2pf/peer</allowed>
+                <allowed>/links/mc/l2pf/lower</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="RelayUsername">
+                <description>The username to use for the relay link if one is given</description>
+            </Argument>
+            <Argument type="java.lang.String" name="State" default="CONNECT_LINK" >
+                <description>Connection State</description>
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Script type="python" pathToScript="../scripts/setLink.py" />
+        </Activity>
+
+        <Activity name="NOMINAL2RECONF" urn="script:python:reconfLinkL0Fci">
+            <description>Activity which redirects FCI connection to MDA-SIM backup.</description>
+            <Argument type="java.lang.String" name="HostName" default="IIPIDEV-W01">
+                <description>Host name</description>
+            </Argument>
+            <Argument type="java.lang.Integer" name="Port" default="11600">
+                <description>Port Number</description>
+            </Argument>
+            <Argument type="java.lang.Integer" name="NumRetries" default="3">
+                <description>Number of retries</description>
+            </Argument>
+            <Argument type="java.lang.Long" name="RetryWait" default="3000" unit="milliseconds">
+                <description>Retry wait duration</description>
+            </Argument>
+            <Argument type="java.lang.Integer" name="Timeout" default="10000" unit="milliseconds">
+                <description>Retry Timeout</description>
+            </Argument>
+            <Argument type="java.lang.Long" name="MaxBandwidth" default="0">
+                <description>The maximum bandwidth used to throttle the transfer.  Zero means do not throttle.</description>
+            </Argument>
+            <Argument type="java.lang.Boolean" name="SupportRecovery" default="false">
+                <description>Whether the link support FTP recovery (outbound FTP only)</description>
+            </Argument>
+            <Argument type="java.lang.String" name="RelayLinkPath" default="">
+                <description>The optional link in which to replicate FTP put transfers on</description>
+                <allowed></allowed>
+                <allowed>/links/mc/mme/mon/idpfmonOut</allowed>
+                <allowed>/links/mc/mme/mon/facmonOut</allowed>
+                <allowed>/links/mc/mme/dac/out</allowed>
+                <allowed>/links/mc/mme/dis/out</allowed>
+                <allowed>/links/mc/mof/mofFtp</allowed>
+                <allowed>/links/mc/l2pf/peer</allowed>
+                <allowed>/links/mc/l2pf/lower</allowed>
+            </Argument>
+            <Argument type="java.lang.String" name="RelayUsername">
+                <description>The username to use for the relay link if one is given</description>
+            </Argument>
+            <Argument type="java.lang.String" name="State" default="CONNECT_LINK" >
+                <description>Connection State</description>
+                <allowed>CONNECT_LINK</allowed>
+                <allowed>DISCONNECT_LINK</allowed>
+            </Argument>
+            <Script type="python" pathToScript="../scripts/setLink.py" />
+        </Activity>
+
+        <System name="mda">
+            <description> The links to the Mission Data Aquisition. </description>
+
+            <!-- Each L0 Link has: timeliness in milliseconds: This is the difference in MDA Annotated Transfer Frame time
+                (ERT) to system priocessing time It is the difference in the ERT timestamp as encoded by the groundstation baseband receiver
+                and the PI's system time base on ntp source when the ATF frame is processed. The casue of the timeliness could be that the
+                L0 isn't processing fast enough, or a issue further up the processing chain -->
+            <!-- Each L0 link in separate sub-path so parameter names are common -->
+            <!-- WARNING: These params are also in the SNMP List -->
+            <System name="SatKaHKTM">
+                <TcpMcLink name="hktm" hostname="IIPIDEV-W01" validHosts="IIPIDEV-W01" port="11501"
+                    clientNumRetries="3" clientRetryInterval="3000" clientTimeout="10000" clientSendBuffer="10"
+                    clientReadBuffer="32768000" serverMaxSessions="3" serverTimeout="1200" />
+
+                <Event name="DataRateOol" severity="1" message="SatKaHKTM data rate is out of limit" />
+                <Event name="TimelinessOol" severity="3" message="SatKaHKTM MDA-L0 timeliness (${timeliness}) is out of limits" >
+                    <Argument name="path" type="java.lang.String" default="none">
+                        <description>The event path</description>
+                    </Argument>
+                    <Argument name="timeliness" type="java.lang.Integer" default="0">
+                        <description>The limit</description>
+                    </Argument>
+                </Event>
+
+                <Parameter name="LinkStatus" type="org.eumetsat.pi.ssm.das.links.LinkStatus" defaultValue="DISCONNECTED"
+                    initSeverity="2">
+                    <description>Status of the link between the MDA and the SatKaHKTM algorithm.</description>
+                    <ServerStatusCheck type="org.eumetsat.pi.ssm.das.links.LinkStatus" severity="2" />
+                </Parameter>
+                <Parameter name="dataRateKBps" type="java.lang.Double" defaultValue="0">
+                    <description>SatKaHKTM algorithm's current ou monitored and controlled (MC) linkstput rate in KB/s.</description>
+                    <LimitCheck event="DataRateOol" parent="/links/mc/mda/SatKaHKTM" severity="2"
+                        type="java.lang.Double" lowerBound="0.01" upperBound="1000.0" />
+                </Parameter>
+                <Parameter name="timeliness" type="java.lang.Integer" defaultValue="0">
+                    <description>The ATF Frame time (ERT) to system time in milliseconds</description>
+                    <LimitCheck event="TimelinessOol" parent="/links/mc/mda/SatKaHKTM" severity="2"
+                        type="java.lang.Integer" lowerBound="0" upperBound="1000" />
+                </Parameter>
+            </System>
+            <System name="SatKaDumpReport">
+                <TcpMcLink name="dump" hostname="IIPIDEV-W01" validHosts = "IIPIDEV-W01" port="11505"
+                    clientNumRetries="3" clientRetryInterval="3000" clientTimeout="10000" clientSendBuffer="10"
+                    clientReadBuffer="32768000" serverMaxSessions="3" serverTimeout="1200" />
+                <Event name="DataRateOol" severity="1" message="SatKaDumpReport data rate is out of limit" />
+                <Event name="TimelinessOol" severity="3" message="SatKaDumpReport MDA-L0 timeliness (${timeliness}) is out of limits" >
+                    <Argument name="path" type="java.lang.String" default="none">
+                        <description>The event path</description>
+                    </Argument>
+                    <Argument name="timeliness" type="java.lang.Integer" default="0">
+                        <description>The limit</description>
+                    </Argument>
+                </Event>
+
+                <!-- TODO: TBD whether this can be elsewhere and we can have a common reference for each link... -->
+                <Parameter name="LinkStatus" type="org.eumetsat.pi.ssm.das.links.LinkStatus" defaultValue="DISCONNECTED"
+                    initSeverity="2">
+                    <description>Status of the link between the MDA and the SatKaDumpReport algorithm.</description>
+                    <ServerStatusCheck type="org.eumetsat.pi.ssm.das.links.LinkStatus" severity="2" />
+                </Parameter>
+                <Parameter name="dataRateKBps" type="java.lang.Double" defaultValue="0">
+                    <description>SatKaDumpReport algorithm's current output rate in KB/s.</description>
+                    <LimitCheck event="DataRateOol" parent="/links/mc/mda/SatKaDumpReport" severity="2"
+                        type="java.lang.Double" lowerBound="0.01" upperBound="1000.0" />
+                </Parameter>
+                <Parameter name="timeliness" type="java.lang.Integer" defaultValue="0">
+                    <description>The ATF Frame time (ERT) to system time in milliseconds</description>
+                    <LimitCheck event="TimelinessOol" parent="/links/mc/mda/SatKaDumpReport" severity="2"
+                        type="java.lang.Integer" lowerBound="0" upperBound="1000" />
+                </Parameter>
+            </System>
+            <System name="PlatformAUXData">
+                <TcpMcLink name="plat" hostname="IIPIDEV-W01" validHosts = "IIPIDEV-W01" port="11502"
+                    clientNumRetries="3" clientRetryInterval="3000" clientTimeout="10000" clientSendBuffer="10"
+                    clientReadBuffer="32768000" serverMaxSessions="3" serverTimeout="1200" />
+                <Event name="DataRateOol" severity="1" message="PlatformAUXData data rate is out of limit" />
+                <Event name="TimelinessOol" severity="3" message="PlatformAUXData MDA-L0 timeliness (${timeliness}) is out of limits" >
+                    <Argument name="path" type="java.lang.String" default="none">
+                        <description>The event path</description>
+                    </Argument>
+                    <Argument name="timeliness" type="java.lang.Integer" default="0">
+                        <description>The limit</description>
+                    </Argument>
+                </Event>
+
+                <Parameter name="LinkStatus" type="org.eumetsat.pi.ssm.das.links.LinkStatus" defaultValue="DISCONNECTED"
+                    initSeverity="2">
+                    <description>Status of the link between the MDA and the PlatformAUXData algorithm.</description>
+                    <ServerStatusCheck type="org.eumetsat.pi.ssm.das.links.LinkStatus" severity="2" />
+                </Parameter>
+                <Parameter name="dataRateKBps" type="java.lang.Double" defaultValue="0">
+                    <description>PlatformAUXData algorithm's current output rate in KB/s.</description>
+                    <LimitCheck event="DataRateOol" parent="/links/mc/mda/PlatformAUXData" severity="2"
+                        type="java.lang.Double" lowerBound="0.01" upperBound="1000.0" />
+                </Parameter>
+                <Parameter name="timeliness" type="java.lang.Integer" defaultValue="0">
+                    <description>The ATF Frame time (ERT) to system time in milliseconds</description>
+                    <LimitCheck event="TimelinessOol" parent="/links/mc/mda/PlatformAUXData" severity="2"
+                        type="java.lang.Integer" lowerBound="0" upperBound="1000" />
+                </Parameter>
+            </System>
+            <System name="FciInstData">
+                <TcpMcLink name="fci" hostname="IIPIDEV-W01" validHosts = "IIPIDEV-W01,IIPIDEV-W02" port="11500"
+                    clientNumRetries="3" clientRetryInterval="3000" clientTimeout="10000" clientSendBuffer="10"
+                    clientReadBuffer="32768000" serverMaxSessions="3" serverTimeout="1200" />
+                <Event name="DataRateOol" severity="1" message="FciInstData data rate is out of limit" />
+                <Event name="TimelinessOol" severity="3" message="FciInstData MDA-L0 timeliness (${timeliness}) is out of limits" >
+                    <Argument name="path" type="java.lang.String" default="none">
+                        <description>The event path</description>
+                    </Argument>
+                    <Argument name="timeliness" type="java.lang.Integer" default="0">
+                        <description>The limit</description>
+                    </Argument>
+                </Event>
+
+                <Parameter name="LinkStatus" type="org.eumetsat.pi.ssm.das.links.LinkStatus" defaultValue="DISCONNECTED"
+                    initSeverity="2">
+                    <description>Status of the link between the MDA and the FciInstData algorithm.</description>
+                    <ServerStatusCheck type="org.eumetsat.pi.ssm.das.links.LinkStatus" severity="2" />
+                </Parameter>
+                <Parameter name="dataRateKBps" type="java.lang.Double" defaultValue="0">
+                    <description>FciInstData algorithm's current output rate in KB/s.</description>
+                    <LimitCheck event="DataRateOol" parent="/links/mc/mda/FciInstData" severity="2"
+                        type="java.lang.Double" lowerBound="500.0" upperBound="10000.0" />
+                </Parameter>
+                <Parameter name="timeliness" type="java.lang.Integer" defaultValue="0">
+                    <description>The ATF Frame time (ERT) to system time in milliseconds</description>
+                    <LimitCheck event="TimelinessOol" parent="/links/mc/mda/FciInstData" severity="2"
+                        type="java.lang.Integer" lowerBound="0" upperBound="1000" />
+                </Parameter>
+            </System>
+            <System name="LiInstData">
+                <TcpMcLink name="li" hostname="IIPIDEV-W01"  validHosts = "IIPIDEV-W01" port="11503"
+                    clientNumRetries="3" clientRetryInterval="3000" clientTimeout="10000" clientSendBuffer="10"
+                    clientReadBuffer="32768000" serverMaxSessions="3" serverTimeout="1200" />
+                <Event name="DataRateOol" severity="1" message="LiInstData data rate is out of limit" />
+                <Event name="TimelinessOol" severity="3" message="LiInstData MDA-L0 timeliness (${timeliness}) is out of limits" >
+                    <Argument name="path" type="java.lang.String" default="none">
+                        <description>The event path</description>
+                    </Argument>
+                    <Argument name="timeliness" type="java.lang.Integer" default="0">
+                        <description>The limit</description>
+                    </Argument>
+                </Event>
+
+                <Parameter name="LinkStatus" type="org.eumetsat.pi.ssm.das.links.LinkStatus" defaultValue="DISCONNECTED"
+                    initSeverity="2">
+                    <description>Status of the link between the MDA and the LiInstData algorithm.</description>
+                    <ServerStatusCheck type="org.eumetsat.pi.ssm.das.links.LinkStatus" severity="2" />
+                </Parameter>
+                <Parameter name="dataRateKBps" type="java.lang.Double" defaultValue="0">
+                    <description>LiInstData algorithm's current output rate in KB/s.</description>
+                    <LimitCheck event="DataRateOol" parent="/links/mc/mda/LiInstData" severity="2"
+                        type="java.lang.Double" lowerBound="10.0" upperBound="10000.0" />
+                </Parameter>
+                <Parameter name="timeliness" type="java.lang.Integer" defaultValue="0">
+                    <description>The ATF Frame time (ERT) to system time in milliseconds</description>
+                    <LimitCheck event="TimelinessOol" parent="/links/mc/mda/LiInstData" severity="2"
+                        type="java.lang.Integer" lowerBound="0" upperBound="1000" />
+                </Parameter>
+            </System>
+
+        </System> <!-- mda -->
+
+        <System name="mme">
+            <description>The link to the Multi-Mission Elements facilities.</description>
+
+            <!-- The FTP status parameters are described in DDF 7.5.7.18 There can be multiple clients sharing the same link,
+                and the client status is a summary of their connection/disconnection/retry status. The Link may have zero or one servers
+                (for inbound file transfers). -->
+
+            <System name="mon">
+                <!-- The /links/mc/mme/mon/in link is used to pull iCal files from MON -->
+                <FtpMcLink name="in" mode="ACTIVE" type="BINARY" sinkDir="" clientNumRetries="3"
+                    clientRetryInterval="1000" clientTimeout="2000" hostname="IIPIMON-S01"
+                    validHosts="IIPIMON-S01" port="21" serverMaxSessions="3" serverTimeout="1200"
+                    clientSendBuffer="50" clientReadBuffer="51">
+                    <description>The link to the MCM from the Mission Operations Facility</description>
+                    <Event name="fileReceivedCal" severity="1" message="iCal File Received">
+                        <Argument type="java.lang.String" name="fileName" />
+                    </Event>
+                    <ftpUsernames size="2">
+                        <entry ssm:key="MON" xsi:type="xsd:string">mon-user</entry>   <!-- user name and password -->
+                        <entry ssm:key="mtgidpfi" xsi:type="xsd:string">mtgidpfi-user</entry>   <!-- user name and password -->
+                    </ftpUsernames>
+                </FtpMcLink>
+
+                <!-- The /links/mc/mme/mon/idpfmonOut link is used for the FTP transfers to the MON except from the gemsWriter -->
+                <FtpMcLink name="idpfmonOut" mode="ACTIVE" type="BINARY" sinkDir="" clientNumRetries="3"
+                    clientRetryInterval="1000" clientTimeout="2000" hostname="IIPITT3-S01"
+                    validHosts="IIPITT3-S01" port="21"
+                    serverMaxSessions="3" serverTimeout="1200" clientSendBuffer="50" clientReadBuffer="51"
+                    maxBandwidth="500000000">
+                    <description>The link from the MCM to the Multi-Mission Elements Monitoring Facility in SD3 </description>
+                    <Event name="ftpFailed" severity="3" message="FTP Transfer failed">
+                        <Argument type="java.lang.String" name="cause" />
+                    </Event>
+                    <Event name="retiesExceeded" severity="3" message="FTP Transfer exceeded retries" />
+                    <ftpUsernames size="2">
+                        <entry ssm:key="MON" xsi:type="xsd:string">mon-user</entry>   <!-- user name and password -->
+                        <entry ssm:key="mtgidpfi" xsi:type="xsd:string">mtgidpfi-user</entry>   <!-- user name and password -->
+                    </ftpUsernames>
+                </FtpMcLink>
+
+                <!-- The /links/mc/mme/mon/facmonOut link is used for the FTP transfers to MON from the gemsWriter activity -->
+                <FtpMcLink name="facmonOut" mode="ACTIVE" type="BINARY" sinkDir="" clientNumRetries="3"
+                    clientRetryInterval="1000" clientTimeout="2000" hostname="IIPIMON-S01"
+                    validHosts="IIPIMON-S01" port="21"
+                    serverMaxSessions="3" serverTimeout="1200" clientSendBuffer="50" clientReadBuffer="51"
+                    maxBandwidth="500000000">
+                    <description>The link from the MCM to the Multi-Mission Elements Monitoring Facility in SD1 </description>
+                    <Event name="ftpFailed" severity="3" message="FTP Transfer failed">
+                        <Argument type="java.lang.String" name="cause" />
+                    </Event>
+                    <Event name="retiesExceeded" severity="3" message="FTP Transfer exceeded retries" />
+                    <ftpUsernames size="2">
+                        <entry ssm:key="MON" xsi:type="xsd:string">mon-user</entry>   <!-- user name and password -->
+                        <entry ssm:key="mtgidpfi" xsi:type="xsd:string">mtgidpfi-user</entry>   <!-- user name and password -->
+                    </ftpUsernames>
+                </FtpMcLink>
+
+            </System>
+
+            <System name="dac">
+                <!-- The /links/mc/mme/dac/out link is used for ALL FTP transfers to the MME_DAC -->
+                <FtpMcLink name="out" mode="ACTIVE" type="BINARY" sinkDir="" clientNumRetries="3"
+                    clientRetryInterval="1000" clientTimeout="2000" hostname="IIPIDAC-S01"
+                    validHosts="IIPIDAC-S01" port="10222" serverMaxSessions="3"
+                    serverTimeout="1200" clientSendBuffer="50" clientReadBuffer="51"
+                    supportRecovery="true">
+                    <description>The link to the Multi-Mission Elements data archive centre.</description>
+                    <Event name="ftpFailed" severity="3" message="FTP Transfer failed">
+                        <Argument type="java.lang.String" name="cause" />
+                    </Event>
+                    <Event name="retiesExceeded" severity="3" message="FTP Transfer exceeded retries" />
+                    <ftpUsernames size="1">
+                        <entry ssm:key="DAC" ssm:type="xsd:string">dac-user</entry>
+                    </ftpUsernames>
+                </FtpMcLink>
+            </System>
+
+            <System name="dis">
+                <!-- The /links/mc/mme/dis/in link is used to pull iCal files from DISS -->
+                <FtpMcLink name="in" mode="ACTIVE" type="BINARY" sinkDir="" clientNumRetries="3"
+                    clientRetryInterval="1000" clientTimeout="2000" hostname="IIPIDIS-S01"
+                    validHosts="IIPIDIS-S01" port="10223" serverMaxSessions="3"
+                    serverTimeout="1200" clientSendBuffer="50" clientReadBuffer="51">
+                    <description>The link to the MCM from the Multi-Mission Elements dissemination system</description>
+                    <Event name="fileReceivedEcmwf" severity="1" message="iECMWF File Received">
+                        <Argument type="java.lang.String" name="fileName" />
+                    </Event>
+                    <Event name="fileValidatedEcmwf" severity="1" message="iECMWF File Validated">
+                        <Argument type="java.lang.String" name="fileName" />
+                    </Event>
+                    <ftpUsernames size="2">
+                        <entry ssm:key="DIS" xsi:type="xsd:string">dis-user</entry>   <!-- user name and password -->
+                        <entry ssm:key="mtgidpfi" xsi:type="xsd:string">mtgidpfi-user</entry>   <!-- user name and password -->
+                    </ftpUsernames>
+                </FtpMcLink>
+
+                <!-- The /links/mc/mme/dis/out link is used for the FTP transfers to the MON -->
+                <FtpMcLink name="out" mode="ACTIVE" type="BINARY" sinkDir="" clientNumRetries="3"
+                    clientRetryInterval="1000" clientTimeout="2000" hostname="IIPIDIS-S01"
+                    validHosts="IIPIDIS-S01" port="10223" serverMaxSessions="3"
+                    serverTimeout="1200" clientSendBuffer="50" clientReadBuffer="51" maxBandwidth="500000000">
+                    <description>The link to Multi-Mission Elements dissemination system from the MCM</description>
+                    <Event name="ftpFailed" severity="3" message="FTP Transfer failed">
+                        <Argument type="java.lang.String" name="cause" />
+                    </Event>
+                    <Event name="retiesExceeded" severity="3" message="FTP Transfer exceeded retries" />
+                    <ftpUsernames size="2">
+                        <entry ssm:key="DIS" ssm:type="xsd:string">dis-user</entry>    <!-- user name and password -->
+                        <entry ssm:key="mtgidpfi" xsi:type="xsd:string">mtgidpfi-user</entry>   <!-- user name and password -->
+                    </ftpUsernames>
+                </FtpMcLink>
+
+            </System>
+
+        </System> <!-- mme -->
+
+        <System name="mof">
+            <description>The inbound an outbound links to the Mission Operations Facility.</description>
+
+            <!-- The /links/mc/mof/in link is unique in that the IDPF acts as the FTP server The default ftp port (21) cannot
+                be opened by a non-root JVM, therefore iptables is configured to redirect port 21 to 10021. Keep in mind that the port 10021
+                need to be changed in two places, here and in platform-dependent central yaml config file. This configuration is summarised
+                below: [root@IIPIMCM-S01 ~]# iptables -t nat -L Chain PREROUTING (policy ACCEPT) target prot opt source destination REDIRECT
+                tcp - anywhere anywhere tcp dpt:ftp redir ports 10021 Also, the hostname should point to an adress being managed by keepalived
+                to allow automated fallback in case of a failing primary server. -->
+
+            <FtpMcLink name="in" mode="ACTIVE" type="BINARY" sinkDir="ftp" clientNumRetries="3"
+                clientRetryInterval="1000" clientTimeout="2000" hostname="10.4.103.155"
+                validHosts="10.4.103.155" port="10021"
+                serverMaxSessions="3" serverTimeout="1200" clientSendBuffer="50" clientReadBuffer="51">
+                <description>The link to the Mission Operations Facility</description>
+                <Event name="duplicateDetected" severity="2" message="Duplicate MOF File '${fileName}' Detected">
+                    <Argument type="java.lang.String" name="fileName" />
+                </Event>
+                <Event name="fileValidated" severity="1" message="MOF File '${fileName}' Validated and Transferred">
+                    <Argument type="java.lang.String" name="fileName" />
+                </Event>
+                <Event name="fileInvalid" severity="3" message="MOF File '${fileName}' Is Invalid: '${reason}'">
+                    <Argument type="java.lang.String" name="fileName" />
+                    <Argument type="java.lang.String" name="reason" />
+                </Event>
+                <!-- On reception of a file the /links/mc/mof/in/upload event is generated. This is an inbuilt event for
+                    the server process -->
+                <ftpUsernames size="1">
+                    <entry ssm:key="MOF" ssm:type="xsd:string">mof-user</entry>
+                </ftpUsernames>
+            </FtpMcLink>
+
+            <!-- The /links/mc/mof/mofFtp link is used for the FTP transfers to the MOF -->
+            <FtpMcLink mode="ACTIVE" type="BINARY" sinkDir="" clientNumRetries="3" clientRetryInterval="1000"
+                clientTimeout="2000" hostname="IIPIMOF-S01"
+                validHosts="IIPIMOF-S01" port="10224" serverMaxSessions="3"
+                serverTimeout="1200" clientSendBuffer="50" clientReadBuffer="51" name="mofFtp">
+
+                <Event name="ftpFailed" severity="3" message="FTP Transfer failed">
+                    <Argument type="java.lang.String" name="cause" />
+                </Event>
+                <Event name="retiesExceeded" severity="3" message="FTP Transfer exceeded retries" />
+                <ftpUsernames size="1">
+                    <entry ssm:key="MOF" xsi:type="xsd:string">mof-user</entry>
+                </ftpUsernames>
+            </FtpMcLink>
+
+        </System> <!-- mof -->
+
+        <System name="l2pf">
+            <!-- The /links/mc/l2pf/peer link is used for the FTP transfers to the L2 Processing Facility (L2PF) of the same
+                'peer' level facility (OPE, VAL, IV) -->
+            <FtpMcLink name="peer" mode="ACTIVE" type="BINARY" sinkDir="" clientNumRetries="3"
+                clientRetryInterval="1000" clientTimeout="2000" hostname="IIPIL2P-S01"
+                validHosts="IIPIL2P-S01" port="10225" serverMaxSessions="3"
+                serverTimeout="1200" clientSendBuffer="50" clientReadBuffer="51">
+                <description>The link to the Level 2 processing facility.</description>
+                <Event name="ftpFailed" severity="3" message="FTP Transfer failed">
+                    <Argument type="java.lang.String" name="cause" />
+                </Event>
+                <Event name="retiesExceeded" severity="3" message="FTP Transfer exceeded retries" />
+                <ftpUsernames size="1">
+                    <entry ssm:key="L2PF" ssm:type="xsd:string">l2pf-user</entry>
+                </ftpUsernames>
+            </FtpMcLink>
+
+            <!-- The /links/mc/l2pf/lower link is used for the FTP transfers to the L2 Processing Facility (L2PF) of the
+                lower 'peer' level facility. On the Operational (OPE) facitility this should link to the Validation (VAL) facility. On the
+                Validation facility this should link to the IV) -->
+            <FtpMcLink name="lower" mode="ACTIVE" type="BINARY" sinkDir="" clientNumRetries="3"
+                clientRetryInterval="1000" clientTimeout="2000" hostname="IIPIL2P-S01"
+                validHosts="IIPIL2P-S01" port="10225" serverMaxSessions="3"
+                serverTimeout="1200" clientSendBuffer="50" clientReadBuffer="51">
+                <description>The link to the Level 2 processing facility.</description>
+                <Event name="ftpFailed" severity="3" message="FTP Transfer failed">
+                    <Argument type="java.lang.String" name="cause" />
+                </Event>
+                <Event name="retiesExceeded" severity="3" message="FTP Transfer exceeded retries" />
+                <ftpUsernames size="1">
+                    <entry ssm:key="L2PF" ssm:type="xsd:string">l2pf-user</entry>
+                </ftpUsernames>
+            </FtpMcLink>
+
+        </System> <!-- l2pf -->
+
+    </System> <!-- mc (monitored and controlled links) -->
+
+    <System name="sc">
+        <description>The self-controlled (SC) links sub-system.</description>
+
+        <System name="jgroups">
+            <description>JGroups multicast specific elements of the Processing Infrastructure</description>
+            <Parameter name="mmiRoles" type="java.lang.Long" defaultValue="0">
+                <description>Total number of nodes in the cluster with the MMI role.</description>
+            </Parameter>
+            <Parameter name="processRoles" type="java.lang.Long" defaultValue="0">
+                <description>Total number of nodes in the cluster with the process role.</description>
+            </Parameter>
+            <Parameter name="noneRoles" type="java.lang.Long" defaultValue="0">
+                <description>Total number of nodes in the cluster with the no role.</description>
+            </Parameter>
+            <Parameter name="otherRoles" type="java.lang.Long" defaultValue="0">
+                <description>Total number of nodes in the cluster with the "other" role.</description>
+            </Parameter>
+            <SyntheticParameter name="totalConnections" type="java.lang.Long"
+                formula="mmiRoles.getValue() + processRoles.getValue() + noneRoles.getValue() + otherRoles.getValue()">
+                <description>Total number of connections within the cluster</description>
+            </SyntheticParameter>
+            <Parameter name="primeServerNames" type="java.lang.String" defaultValue="NONE">
+                <description>Prime Server name.</description>
+            </Parameter>
+            <Parameter name="backupServerNames" type="java.lang.String" defaultValue="NONE">
+                <description>Backup Server Names</description>
+            </Parameter>
+            <Event name="proxyDown" severity="3" message="Proxy has left jgroups cluster">
+                <description>Event raised when proxy leaves JGroups cluster.</description>
+                <Argument type="java.lang.String" name="proxy">
+                    <description>Name of proxy (or comma separated list if more than one).</description>
+                </Argument>
+            </Event>
+        </System>
+
+        <!-- The lustre self controlled link relies on collectl being installed on the a server (the MDS server) -->
+        <System name="lustre">
+            <description>Lustre distributed file-system specific elements of the Processing Infrastructure</description>
+            <TcpMcLink name="collectlTcp" clientNumRetries="10" clientRetryInterval="1000" clientTimeout="1"
+                hostname="IIPIMDS-S01" port="2655" serverMaxSessions="3"
+                serverTimeout="1200" clientSendBuffer="10" clientReadBuffer="1000" >
+                <description>TCP link to the lustre core server.</description>
+            </TcpMcLink>
+
+            <Parameter name="cpuSys" type="java.lang.Integer" unit="%" defaultValue="0">
+                <description>CPU usage (kernel) of the lustre server.</description>
+            </Parameter>
+            <Parameter name="cpuTotal" type="java.lang.Integer" unit="%" defaultValue="0">
+                <description>Total CPU usage (user + kernel) of the lustre server.</description>
+            </Parameter>
+
+            <Parameter name="diskReads" type="java.lang.Integer" defaultValue="0">
+                <description>Total individual disk reads on the lustre server.</description>
+            </Parameter>
+            <Parameter name="diskKBReads" type="java.lang.Integer" unit="Kb" defaultValue="0">
+                <description>Total disk reads in KB on the lustre server.</description>
+            </Parameter>
+            <Parameter name="diskWrites" type="java.lang.Integer" defaultValue="0">
+                <description>Total individual disk writes on the lustre server.</description>
+            </Parameter>
+            <Parameter name="diskKBWrites" type="java.lang.Integer" unit="Kb" defaultValue="0">
+                <description>Total disk writes in KB on the lustre server.</description>
+            </Parameter>
+
+            <Parameter name="netIn" type="java.lang.Integer" defaultValue="0">
+                <description>Total individual network reads (in) on the lustre server.</description>
+            </Parameter>
+            <Parameter name="netKBIn" type="java.lang.Integer" unit="Kb" defaultValue="0">
+                <description>Total network reads (in) in KB on the lustre server.</description>
+            </Parameter>
+            <Parameter name="netOut" type="java.lang.Integer" defaultValue="0">
+                <description>Total individual network writes (out) on the lustre server.</description>
+            </Parameter>
+            <Parameter name="netKBOut" type="java.lang.Integer" unit="Kb" defaultValue="0">
+                <description>Total disk writes (out) in KB on the lustre server.</description>
+            </Parameter>
+            <Event name="failed" severity="3" message="Lustre directory unavailable">
+                <description>Lustre is suspected of failure because of an exception reading or writing to Lustre disk.</description>
+                <Argument type="java.lang.String" name="message">
+                    <description>Reason for failure, can be an exception message</description>
+                </Argument>
+            </Event>
+        </System>
+
+        <!-- SLURM job control specific elements of the Processing Infrastructure This information is populated by a thread
+            in the grid adapter. This queries slurm using scontrol -->
+        <System name="slurm">
+            <description>SLURM job control specific elements of the Processing Infrastructure</description>
+            <System name="debug">
+                <description>Debugging elements for SLURM.</description>
+                <Parameter name="running" type="java.lang.Long">
+                    <description>The number of running SLURM jobs within the cluster.</description>
+                </Parameter>
+                <Parameter name="pending" type="java.lang.Long">
+                    <description>The number of pending SLURM jobs within the cluster.</description>
+                    <LimitCheck event="pendingJobs" parent="debug" severity="2" type="java.lang.Long"
+                        lowerBound="0" upperBound="1" />
+                </Parameter>
+                <Event name="pendingJobs" severity="3" message="SLURM is over allocated">
+                    <description>Event raised when the number of pending jobs (PI Activities) exceeds a given threshold.</description>
+                    <Argument type="java.lang.Long" name="pending">
+                        <description>The actual number of pending jobs when the event was raised.</description>
+                    </Argument>
+                </Event>
+                <Event name="error" severity="3" message="SLURM is not responding">
+                    <description>Event raised when slurm does not respond successfully to its API calls.</description>
+                    <Argument type="java.lang.String" name="message">
+                        <description>Error message from slurm.</description>
+                    </Argument>
+                </Event>
+            </System>
+        </System>
+
+    </System> <!-- sc (self-controled links) -->
+
+</System>

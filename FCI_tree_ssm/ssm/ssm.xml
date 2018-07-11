@@ -1,0 +1,291 @@
+<System xmlns="http://eumetsat.org/mtg/ssm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <!-- Draft A of the Space System Model -->
+    <System name="MTGI">
+        <System name="Common">
+            <System name="IpcL0">
+                <!-- Placeholder for L0 APEs common to FCI and LI -->
+            </System>
+            <System name="IpcL1">
+                <Activity name="ApeMtgiGeoCalib" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                </Activity>
+                <Activity name="ApeMtgiInr" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                </Activity>
+            </System>
+        </System>
+
+        <System name="FCI">
+            <System name="IpcL0">
+                <Activity name="L0FciApe" urn="urn:ape:L0Fci" reference="activities/L0-FCI_ssm.xml" />
+
+                <Activity name="ApeFciHktmL0" urn="">
+                    <Parameter name="antennaHKTM" type="java.lang.String" />
+                    <Parameter name="linkStateHKTM" type="java.lang.String" />
+                    <Parameter name="linkConnectTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkConnectionRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumConnectionAttempts" type="java.lang.Integer" />
+                    <Parameter name="clientHostName" type="java.lang.String" />
+                    <Parameter name="serverHostName" type="java.lang.String" />
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                    <Parameter name="apeServerName" type="java.lang.String" />
+                </Activity>
+                <Activity name="ApeFciPlatAuxL0" urn="">
+                    <Parameter name="antennaPLATAUX" type="java.lang.String" />
+                    <Parameter name="linkStatePLATAUX" type="java.lang.String" />
+                    <Parameter name="linkConnectTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkConnectionRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumConnectionAttempts" type="java.lang.Integer" />
+                    <Parameter name="clientHostName" type="java.lang.String" />
+                    <Parameter name="serverHostName" type="java.lang.String" />
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                    <Parameter name="apeServerName" type="java.lang.String" />
+                </Activity>
+                <Activity name="L0FciAfd" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                    <Parameter name="apeServerName" type="java.lang.String" />
+                    <Parameter name="linkStateDC" type="java.lang.String" />
+                    <Parameter name="linkTransferStateDC" type="java.lang.String" />
+                    <Parameter name="linkConnectTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkConnectionRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumConnectionAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkTransferTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkTransferRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumTransferAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkNumBufferedFiles" type="java.lang.Integer" />
+                    <Parameter name="clientHostName" type="java.lang.String" />
+                    <Parameter name="serverHostName" type="java.lang.String" />
+                    <Parameter name="linkStateMon" type="java.lang.String" />
+                    <Parameter name="linkTransferStateMon" type="java.lang.String" />
+                    <Parameter name="linkConnectTimeoutMon" type="java.lang.Integer" />
+                    <Parameter name="linkConnectionRetryIntervalMon" type="java.lang.Integer" />
+                    <Parameter name="linkNumConnectionAttemptsMon" type="java.lang.Integer" />
+                    <Parameter name="linkTransferTimeoutMon" type="java.lang.Integer" />
+                    <Parameter name="linkTransferRetryIntervalMon" type="java.lang.Integer" />
+                    <Parameter name="linkNumTransferAttemptsMon" type="java.lang.Integer" />
+                    <Parameter name="linkNumBufferedFilesMon" type="java.lang.Integer" />
+                    <Parameter name="clientHostNameMon" type="java.lang.String" />
+                    <Parameter name="serverHostNameMon" type="java.lang.String" />
+                    <Parameter name="lastCompleteSwathStartTime" type="java.lang.String" />
+                </Activity>
+                <Activity name="ApeFciQlAfdL0" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                    <Parameter name="apeServerName" type="java.lang.String" />
+                    <Parameter name="linkStateDC" type="java.lang.String" />
+                    <Parameter name="linkTransferStateDC" type="java.lang.String" />
+                    <Parameter name="linkConnectTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkConnectionRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumConnectionAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkTransferTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkTransferRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumTransferAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkNumBufferedFiles" type="java.lang.Integer" />
+                    <Parameter name="clientHostName" type="java.lang.String" />
+                    <Parameter name="serverHostName" type="java.lang.String" />
+                </Activity>
+                <Activity name="L1FciMofAdu" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                    <Parameter name="linkStateMOF" type="java.lang.String" />
+                    <Parameter name="linkTransferStateMOF" type="java.lang.String" />
+                    <Parameter name="linkConnectTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkConnectionRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumConnectionAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkTransferTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkTransferRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumTransferAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkNumBufferedFiles" type="java.lang.Integer" />
+                    <Parameter name="clientHostName" type="java.lang.String" />
+                    <Parameter name="serverHostName" type="java.lang.String" />
+                </Activity>
+            </System>
+
+            <System name="IpcL1">
+                <Activity name="L1bFciApe" urn="urn:ape:l1b-stub" reference="activities/l1b_stub_ssm.xml" />
+
+                <Activity name="L1cFciApe" urn="urn:ape:l1c-stub">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                    <Parameter name="lastCompleteSwathStartTime" type="java.lang.String" />
+
+                    <Parameter name="activeManeuvre" type="java.lang.Boolean" />
+                    <Parameter name="benchmarkParameter" type="java.lang.Long" />
+                    <Parameter name="temperature" type="java.lang.Float">
+                        <LimitCheck event="/temperatureOolEvent" severity="1" type="java.lang.Float"
+                            lowerBound="10.0" upperBound="30.0" />
+                        <LimitCheck event="/temperatureOolEvent" severity="2" type="java.lang.Float"
+                            lowerBound="0.0" upperBound="50.0" />
+                    </Parameter>
+                    <Parameter name="progress" type="java.lang.Float" />
+
+                    <Event name="temperatureOolEvent" severity="3" message="Temperature event" />
+
+                    <Event name="l1cstubStartEvent" severity="1" message="l1c-stub APE start event" />
+                    <Event name="l1cstubStopEvent" severity="1" message="l1c-stub APE stop event" />
+
+                    <Argument name="sleepTime" type="java.lang.String"></Argument>
+                    <Argument name="apeDuration" type="java.lang.String"></Argument>
+                </Activity>
+                <Activity name="L1StarFciApe" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                </Activity>
+                <Activity name="L1LmkFciApe" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                </Activity>
+                <Activity name="ApeFciQlAfdL1" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                    <Parameter name="apeServerName" type="java.lang.String" />
+                    <Parameter name="linkStateDC" type="java.lang.String" />
+                    <Parameter name="linkTransferStateDC" type="java.lang.String" />
+                    <Parameter name="linkConnectTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkConnectionRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumConnectionAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkTransferTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkTransferRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumTransferAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkNumBufferedFiles" type="java.lang.Integer" />
+                    <Parameter name="clientHostName" type="java.lang.String" />
+                    <Parameter name="serverHostName" type="java.lang.String" />
+                </Activity>
+                <Activity name="L1FciAfd" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                    <Parameter name="apeServerName" type="java.lang.String" />
+                    <Parameter name="linkStateDC" type="java.lang.String" />
+                    <Parameter name="linkTransferStateDC" type="java.lang.String" />
+                    <Parameter name="linkConnectTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkConnectionRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumConnectionAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkTransferTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkTransferRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumTransferAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkNumBufferedFiles" type="java.lang.Integer" />
+                    <Parameter name="clientHostName" type="java.lang.String" />
+                    <Parameter name="serverHostName" type="java.lang.String" />
+                    <Parameter name="linkStateL2PF" type="java.lang.String" />
+                    <Parameter name="linkTransferStateL2PF" type="java.lang.String" />
+                    <Parameter name="linkConnectTimeoutL2PF" type="java.lang.Integer" />
+                    <Parameter name="linkConnectionRetryIntervalL2PF" type="java.lang.Integer" />
+                    <Parameter name="linkNumConnectionAttemptsL2PF" type="java.lang.Integer" />
+                    <Parameter name="linkTransferTimeoutL2PF" type="java.lang.Integer" />
+                    <Parameter name="linkTransferRetryIntervalL2PF" type="java.lang.Integer" />
+                    <Parameter name="linkNumTransferAttemptsL2PF" type="java.lang.Integer" />
+                    <Parameter name="linkNumBufferedFilesL2PF" type="java.lang.Integer" />
+                    <Parameter name="clientHostNameL2PF" type="java.lang.String" />
+                    <Parameter name="serverHostNameL2PF" type="java.lang.String" />
+                    <Parameter name="lastCompleteSwathStartTime" type="java.lang.String" />
+                </Activity>
+            </System>
+
+        </System>
+
+        <System name="Li">
+            <System name="IpcL0">
+                <Activity name="L1LiMofAdu" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                    <Parameter name="linkStateMOF" type="java.lang.String" />
+                    <Parameter name="linkTransferStateMOF" type="java.lang.String" />
+                    <Parameter name="linkConnectTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkConnectionRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumConnectionAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkTransferTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkTransferRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumTransferAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkNumBufferedFiles" type="java.lang.Integer" />
+                    <Parameter name="clientHostName" type="java.lang.String" />
+                    <Parameter name="serverHostName" type="java.lang.String" />
+                </Activity>
+                <Activity name="L0LiQL" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                    <Parameter name="linkStateDC" type="java.lang.String" />
+                    <Parameter name="linkTransferStateDC" type="java.lang.String" />
+                    <Parameter name="linkConnectTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkConnectionRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumConnectionAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkTransferTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkTransferRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumTransferAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkNumBufferedFiles" type="java.lang.Integer" />
+                    <Parameter name="clientHostName" type="java.lang.String" />
+                    <Parameter name="serverHostName" type="java.lang.String" />
+                </Activity>
+            </System>
+
+            <System name="IpcL1">
+
+                <Activity name="ApeLiBckimg" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                </Activity>
+                <Activity name="ApeLiEvent" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                </Activity>
+                <Activity name="ApeLiLmk" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                </Activity>
+                <Activity name="L1LiQL" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                    <Parameter name="apeServerName" type="java.lang.String" />
+                    <Parameter name="linkStateDC" type="java.lang.String" />
+                    <Parameter name="linkTransferStateDC" type="java.lang.String" />
+                    <Parameter name="linkConnectTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkConnectionRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumConnectionAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkTransferTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkTransferRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumTransferAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkNumBufferedFiles" type="java.lang.Integer" />
+                    <Parameter name="clientHostName" type="java.lang.String" />
+                    <Parameter name="serverHostName" type="java.lang.String" />
+                </Activity>
+                <Activity name="L1LiAfd" urn="">
+                    <Parameter name="apeStatus" type="java.lang.String" />
+                    <Parameter name="linkStateDC" type="java.lang.String" />
+                    <Parameter name="linkTransferStateDC" type="java.lang.String" />
+                    <Parameter name="linkConnectTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkConnectionRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumConnectionAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkTransferTimeout" type="java.lang.Integer" />
+                    <Parameter name="linkTransferRetryInterval" type="java.lang.Integer" />
+                    <Parameter name="linkNumTransferAttempts" type="java.lang.Integer" />
+                    <Parameter name="linkNumBufferedFiles" type="java.lang.Integer" />
+                    <Parameter name="clientHostName" type="java.lang.String" />
+                    <Parameter name="serverHostName" type="java.lang.String" />
+                    <Parameter name="linkStateL2PF" type="java.lang.String" />
+                    <Parameter name="linkTransferStateL2PF" type="java.lang.String" />
+                    <Parameter name="linkConnectTimeoutL2PF" type="java.lang.Integer" />
+                    <Parameter name="linkConnectionRetryIntervalL2PF" type="java.lang.Integer" />
+                    <Parameter name="linkNumConnectionAttemptsL2PF" type="java.lang.Integer" />
+                    <Parameter name="linkTransferTimeoutL2PF" type="java.lang.Integer" />
+                    <Parameter name="linkTransferRetryIntervalL2PF" type="java.lang.Integer" />
+                    <Parameter name="linkNumTransferAttemptsL2PF" type="java.lang.Integer" />
+                    <Parameter name="linkNumBufferedFilesL2PF" type="java.lang.Integer" />
+                    <Parameter name="clientHostNameL2PF" type="java.lang.String" />
+                    <Parameter name="serverHostNameL2PF" type="java.lang.String" />
+                    <Parameter name="latestDummyRepeatCycleCompletedStartTime" type="java.lang.String" />
+                </Activity>
+
+            </System>
+
+        </System>
+
+        <System name="mcm">
+            <Parameter name="primeServerName" type="java.lang.String" />
+            <Parameter name="backupServerName" type="java.lang.String" />
+            <Parameter name="mofFtpServerName" type="java.lang.String" />
+            <Parameter name="mofFtpServerPairedIpAddress" type="java.lang.String" />
+            <Parameter name="numberOfunacknowledgedAlarms" type="java.lang.Integer" />
+            <Parameter name="fciMode" type="java.lang.String" />
+            <Parameter name="liMode" type="java.lang.String" />
+            <Parameter name="fciTraceLevel" type="java.lang.Integer" />
+            <Parameter name="liTraceLevel" type="java.lang.Integer" />
+            <Parameter name="mnemonicOfLastExecutedCommand" type="java.lang.String" />
+            <Parameter name="mnemonicOfCurrentCommand" type="java.lang.String" />
+            <Parameter name="mnemonicOfLastReceievedCommand" type="java.lang.String" />
+            <Parameter name="fciStatus" type="java.lang.String" />
+            <Parameter name="liStatus" type="java.lang.String" />
+
+            <Activity name="DroolsActivityLauncher" urn="urn:drools:">
+                <Artifact group="com.cgi.idpf.distribution.drools" artifact="fci-chain" version="0.9.0" />
+            </Activity>
+        </System>
+
+    </System>
+
+</System>

@@ -1,0 +1,39 @@
+<System xmlns="http://eumetsat.org/mtg/ssm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>Definition of the MTG-S processing elements.</description>
+
+    <Parameter name="inManoeuvre" type="java.lang.Boolean">
+        <description>
+            Flag indicating whether the MTG satellite is currently in manoeuvre.
+        </description>
+    </Parameter>
+    
+    <Parameter name="subSatelliteLongitude" type="java.lang.Double">
+        <description>
+            The sub-satellite point longitude of the satellite projected onto Earth. 
+        </description>
+    </Parameter>
+
+    <Activity name="Scenario2IrsRules" urn="urn:rules:">
+        <description>Project demonstration orchestration used for scenario 2 IRS.</description>
+
+
+        <!-- Subscribing to events under FCI -->
+        <Argument name="useRaw" type="java.lang.Integer" default="1">
+            <description>TODO.</description>
+        </Argument>
+        <subscribe>/MTGS/IRS</subscribe>
+    </Activity>
+
+
+    <System name="IRS">
+        <description>The Infrared sounder sub processing system.</description>
+
+
+        <System name="IpcL1">
+            <description>The Infrared sounder Level 1 sub processing system.</description>
+
+
+
+        </System>
+    </System>
+</System>

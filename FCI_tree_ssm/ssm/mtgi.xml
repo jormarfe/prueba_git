@@ -1,0 +1,1498 @@
+<System xmlns="http://eumetsat.org/mtg/ssm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>Space System for the MTG-I imaging satellites.</description>
+
+    <Parameter name="spacecraft" type="java.lang.String" defaultValue="MTI1"/>
+    <Parameter name="inManoeuvre" type="java.lang.Boolean" defaultValue="false">
+        <description>
+            Flag indicating whether the MTG satellite is currently in manoeuvre.
+        </description>
+    </Parameter>
+
+    <Activity name="setInManoeuvre" urn="script:python:setInManoeuvre">
+        <Argument name="duration" type="java.lang.Double">
+            <description>Duration of the manoeuvre</description>
+        </Argument>
+        <Script type="python" pathToScript="../scripts/setInManoeuvre.py" />
+    </Activity>
+
+    <Parameter name="subSatelliteLongitude" type="java.lang.Double">
+        <description>
+            The sub-satellite point longitude of the satellite projected onto Earth.
+        </description>
+    </Parameter>
+
+    <Activity name="StartMtgi" urn="script:python:startMtgiChain">
+        <description>
+            Starts MTG-I FCI and LI processing chains.
+        </description>
+        <Script type="python" pathToScript="../scripts/startActivities.py" />
+    </Activity>
+
+    <Activity name="StopMtgi" urn="script:python:stopMtgiChain">
+        <description>
+            Stops MTG-I FCI and LI processing chains gracefully.
+        </description>
+        <Script type="python" pathToScript="../scripts/stopChains.py" />
+    </Activity>
+
+    <Activity name="StopFciChain" urn="script:python:stopFciChain">
+        <description>
+            Stops Fci chain gracefully.
+        </description>
+         <Argument name="waitTimeForCompleteProcessing" type="java.lang.Double" default="900" >
+                <description> Wait time allowing the chain processing to complete normally</description>
+        </Argument>
+        <Script type="python" pathToScript="../scripts/stopChains.py" />
+    </Activity>
+
+    <Activity name="StopLiChain" urn="script:python:stopLiChain">
+        <description>
+             Stops Li chain gracefully.
+        </description>
+         <Argument name="waitTimeForCompleteProcessing" type="java.lang.Double" default="900" >
+                <description> Wait time allowing the chain processing to complete normally</description>
+        </Argument>
+        <Script type="python" pathToScript="../scripts/stopChains.py" />
+    </Activity>
+
+    <!-- Satellite Processing Mode -->
+    <System name="processingMode">
+
+        <!-- Flag defining whether the Fci and Li chain is in RTP or RTN processing mode [PI-ADD-06340]
+        RTP = Real Time Processing, RTN = Real Time Non-Processing. In RTN no level 1 data is generated
+        or disseminated. -->
+        <Parameter name="SatProcessingMode" type="java.lang.String" defaultValue="RTP">
+        </Parameter>
+
+        <!-- An activity to set the processing mode at satellite level.-->
+        <Activity name="setSatelliteProcessingMode" urn="script:python:setProcessingModeSatLevel">
+            <description> This command sets the processing mode at satellite level, updates Fci and Li
+                processing modes
+            </description>
+            <Argument type="java.lang.String" name="value" default="RTP" description="Enumeration of allowed values">
+                <description>Real Time Processing or Real Time Non-Processing</description>
+                <allowed>RTP</allowed>
+                <allowed>RTN</allowed>
+            </Argument>
+            <Script type="python" pathToScript="../scripts/setProcessingMode.py" />
+        </Activity>
+
+    </System>
+
+    <!-- MTGI System level monitoring parameters -->
+    <System name="monitor">
+
+        <!-- Events for unexpected number of FCI Chain algorithms -->
+        <Event name="numL0FCIOOL" severity="2"
+            message="OOL: Unexpected number of running L0-FCI algorithms " />
+        <Event name="numL0HKTMOOL" severity="2"
+            message="OOL: Unexpected number of running L0-HKTM algorithms " />
+        <Event name="numL0PLATOOL" severity="2"
+            message="OOL: Unexpected number of running L0-PLAT algorithms " />
+        <Event name="numL0DumpRptOOL" severity="2"
+            message="OOL: Unexpected number of running L0-DumpRpt algorithms " />
+        <Event name="numL1bOOL" severity="2" message="OOL: Unexpected number of running L1B algorithms " />
+        <Event name="numL1cOOL" severity="2" message="OOL: Unexpected number of running L1C algorithms " />
+        <Event name="numL1cQualOOL" severity="2"
+            message="OOL: Unexpected number of running L1C-Quality algorithms " />
+        <Event name="numStarOOL" severity="2" message="OOL: Unexpected number of running STAR algorithms " />
+        <Event name="numLmkOOL" severity="2" message="OOL: Unexpected number of running Lmk algorithms " />
+        <Event name="numL0fciAFDOOL" severity="2"
+            message="OOL: Unexpected number of running L0-FCI-AFD algorithms " />
+        <Event name="numL1fciAFDOOL" severity="2"
+            message="OOL: Unexpected number of running L1-FCI-AFD algorithms " />
+        <Event name="numL0fciQLOOL" severity="2"
+            message="OOL: Unexpected number of running L0-FCI-QL algorithms " />
+        <Event name="numL1fciQLOOL" severity="2"
+            message="OOL: Unexpected number of running L1-FCI-QL algorithms " />
+
+        <!-- Events for unexpected number of LI Chain algorithms -->
+        <Event name="numL0LIOOL" severity="2"
+            message="OOL: Unexpected number of running L0-LI algorithms " />
+        <Event name="numL0LIQLOOL" severity="2"
+            message="OOL: Unexpected number of running L0-LI-QL algorithms " />
+        <Event name="numL1LIQLOOL" severity="2"
+            message="OOL: Unexpected number of running L1-LI-QL algorithms " />
+        <Event name="numL0LIAFDOOL" severity="2"
+            message="OOL: Unexpected number of running L0-LI-AFD algorithms " />
+        <Event name="numLI1BBCKOOL" severity="2"
+            message="OOL: Unexpected number of running LI-1B-BCK algorithms " />
+        <Event name="numLI1BBCKAFDOOL" severity="2"
+            message="OOL: Unexpected number of running LI-1B-BCK AFD algorithms " />
+        <Event name="numLI1BBCKAFD4L2PFOOL" severity="2"
+            message="OOL: Unexpected number of running LI-1B-BCK AFD4L2PF algorithms " />
+        <Event name="numLI1BEVTOOL" severity="2"
+            message="OOL: Unexpected number of running LI-1B-EVT algorithms " />
+        <Event name="numLI1BEVTAFDOOL" severity="2"
+            message="OOL: Unexpected number of running LI-1B-EVT AFD algorithms " />
+        <Event name="numLI1BEVTAFD4L2PFOOL" severity="2"
+            message="OOL: Unexpected number of running LI-1B-EVT AFD4L2PF algorithms " />
+
+        <!-- The total number of instances of each type of FCI-Chain algorithm -->
+        <Parameter name="numL0FCIinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Whether the L0-FCI Algorithm is running</description>
+            <LimitCheck event="numL0FCIOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="1" />
+        </Parameter>
+        <Parameter name="numL0HKTMinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Whether the L0-HKTM Algorithm is running</description>
+            <LimitCheck event="numL0HKTMOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="1" />
+        </Parameter>
+        <Parameter name="numL0PLATinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Whether the L0-PLAT Algorithm is running</description>
+            <LimitCheck event="numL0PLATOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="1" />
+        </Parameter>
+        <Parameter name="numL0DumpRptinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Whether the L0-DumpRpt algorithm is running</description>
+            <LimitCheck event="numL0DumpRptOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="1" />
+        </Parameter>
+        <Parameter name="numL1Binstances" type="java.lang.Integer" defaultValue="0">
+            <description>Total number of instances of L1B algorithms currently running </description>
+            <LimitCheck event="numL1bOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="12" />
+        </Parameter>
+        <Parameter name="numL1Cinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Total number of instances of L1C algorithms currently running </description>
+            <LimitCheck event="numL1cOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="12" />
+        </Parameter>
+        <Parameter name="numL1CQUALinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Total number of instances of L1C Quality algorithms currently running
+            </description>
+            <LimitCheck event="numL1cQualOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="2" />
+        </Parameter>
+        <Parameter name="numSTARinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Total number of instances of STAR algorithms currently running
+            </description>
+            <LimitCheck event="numStarOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="0" upperBound="2" />
+        </Parameter>
+        <Parameter name="numLMKinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Total number of instances of Landmark algorithms currently running
+            </description>
+            <LimitCheck event="numLmkOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="0" upperBound="2" />
+        </Parameter>
+        <Parameter name="numL0fciAFDinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Total number of instances of L0-FCI-AFD algorithms currently running
+            </description>
+            <LimitCheck event="numL0fciAFDOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="2" />
+        </Parameter>
+        <Parameter name="numL1fciAFDinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Total number of instances of L1-FCI-AFD algorithms currently running
+            </description>
+            <LimitCheck event="numL1fciAFDOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="2" />
+        </Parameter>
+        <Parameter name="numL0fciQLinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Total number of instances of L0-FCI-QL algorithms currently running
+            </description>
+            <LimitCheck event="numL0fciQLOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="2" />
+        </Parameter>
+        <Parameter name="numL1fciQLinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Total number of instances of L1-FCI-QL algorithms currently running
+            </description>
+            <LimitCheck event="numL1fciQLOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="2" />
+        </Parameter>
+
+        <!-- The latest chunk information of each type -->
+        <Parameter name="latestL0FCIchunk" type="java.lang.Integer" defaultValue="0">
+            <description>The latest chunk number produced by the L1B algorithms </description>
+        </Parameter>
+        <Parameter name="latestL1Bchunk" type="java.lang.Integer" defaultValue="0">
+            <description>The latest chunk number produced by the L1B algorithms </description>
+        </Parameter>
+        <Parameter name="latestL1Cchunk" type="java.lang.Integer" defaultValue="0">
+            <description>The latest chunk number produced by the L1C algorithms </description>
+        </Parameter>
+
+        <!-- The latest chunk timeliness info -->
+
+
+
+        <!-- The total number of instances of each type of LI-Chain algorithm -->
+        <Parameter name="numL0LIinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Whether the L0-LI Algorithm is running </description>
+            <LimitCheck event="numL0LIOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="1" />
+        </Parameter>
+        <Parameter name="numL0LIQLinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Number of L0-LI-AFD Instances running </description>
+            <LimitCheck event="numL0LIQLOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="2" />
+        </Parameter>
+        <Parameter name="numL0LIAFDinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Number of L0-LI-AFD Instances running </description>
+            <LimitCheck event="numL0LIAFDOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="2" />
+        </Parameter>
+        <Parameter name="numLI1BBCKinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Number of LI-1B-BCK algorithm instances running</description>
+            <LimitCheck event="numLI1BBCKOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="2" />
+        </Parameter>
+        <Parameter name="numLI1BBCKAFDinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Number of L1 LI BCK AFD Instances running</description>
+            <LimitCheck event="numLI1BBCKAFDOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="2" />
+        </Parameter>
+        <Parameter name="numLI1BBCKAFD4L2PFinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Number of L1 LI BCK AFD4L2PF Instances running</description>
+            <LimitCheck event="numLI1BBCKAFD4L2PFOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="2" />
+        </Parameter>
+        <Parameter name="numLI1BEVTinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Number of LI-IB-EVT Instances running</description>
+            <LimitCheck event="numLI1BEVTOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="2" />
+        </Parameter>
+        <Parameter name="numLI1BEVTAFDinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Number of L1 LI Events AFD Instances running</description>
+            <LimitCheck event="numLI1BEVTAFDOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="2" />
+        </Parameter>
+        <Parameter name="numLI1BEVTAFD4L2PFinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Number of L1 LI Events AFD4L2PF Instances running</description>
+            <LimitCheck event="numLI1BEVTAFD4L2PFOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="2" />
+        </Parameter>
+        <Parameter name="numL1LIQLinstances" type="java.lang.Integer" defaultValue="0">
+            <description>Number of L1-LI-QL Quicklook instances running </description>
+            <LimitCheck event="numL1LIQLOOL" parent="/MTGI/monitor" severity="2"
+                type="java.lang.Integer" lowerBound="1" upperBound="2" />
+        </Parameter>
+
+        <Parameter type="java.lang.Boolean" name="Suspended" defaultValue="false"> <description>Flag to suspend </description> </Parameter>
+
+        <Activity name="updateTraceLevelParams" urn="script:python:updateTraceParameters">
+            <description>
+                Update FCI and LI Trace level parameter values.
+            </description>
+            <Script type="python" pathToScript="../scripts/updateTraceLevelParams.py" />
+        </Activity>
+
+    </System>
+
+
+
+    <Activity name="TimelinessRules" urn="urn:rules:">
+        <description>Rules for checking time based metrics of chunk processing.</description>
+        <Parameter type="java.lang.Boolean" name="Suspended" defaultValue="false"> <description>Flag to suspend </description> </Parameter>
+        <Artifact group="com.cgi.idpf.distribution.drools" artifact="timeliness" version="0.9.0" />
+        <Argument name="minutes" type="java.lang.Integer" default="10">
+            <description>Expected maximum duration of processing per repeat cycle.</description>
+        </Argument>
+        <Argument name="chunksInRepeatCycle" type="java.lang.Integer" default="80">
+            <description>Expected number of chunks processed per repeat cycle.</description>
+        </Argument>
+        <!-- Subscribing to ALL events under FCI -->
+        <subscribe>/MTGI/FCI/</subscribe>
+    </Activity>
+
+
+
+
+
+
+    <System name="Common">
+        <description>Common MTG-I orchestration rules for the processing infrastructure.
+        </description>
+        <System name="IpcL0">
+            <description>Space system elements of the Level 0 IPC sub-system.</description>
+            <!-- L0 APEs common to FCI and LI chains -->
+            <Activity name="L0HktmApe" urn="urn:ape:L0-HKTM" reference="activities/L0-HKTM_ssm.xml">
+                <description>L0 House keeping telemetry algorithm.</description>
+            </Activity>
+            <Activity name="L0PlatApe" urn="urn:ape:L0-PLAT" reference="activities/L0-PLAT_ssm.xml">
+                <description>L0 Platform algorithm.</description>
+            </Activity>
+            <Activity name="L0DumpRptApe" urn="urn:ape:L0-DumpRpt" reference="activities/L0-DumpRpt_ssm.xml">
+                <description>L0 Dump Reports algorithm.</description>
+            </Activity>
+            <!-- Algorithm to process (validate) calibration feedback from MME-MON -->
+            <Activity name="iCal" urn="urn:ape:ical" reference="activities/iCal_ssm.xml">
+                <description>iCalibrationFeedback algorithm.</description>
+            </Activity>
+
+            <!-- Common L0 events TODO: move to dedicated file -->
+
+            <!-- L0 Algorithm has received an IO Erorr on the DAS link. -->
+            <Event name="L0connectionError" severity="3"
+                message="L0 ${algName} APE. Error on MDA link connection">
+                <description>Event raised when an L0 Algorithm has received an IO Error on the link
+                </description>
+                <Argument name="algName" type="java.lang.String">
+                    <description>The name of the L0 Algorithm</description>
+                </Argument>
+            </Event>
+            <!-- L0 Algorithm has received data on the link. This does not mean it is valid data -->
+            <Event name="L0connectionFirstData" severity="2"
+                message="L0 ${algName} APE. Data received on link">
+                <description>L0 Algorithm has received data on the link. This does not mean it is
+                    valid data
+                </description>
+                <Argument name="algName" type="java.lang.String" default="NK">
+                    <description>The name of the L0 Algorithm</description>
+                </Argument>
+            </Event>
+            <!-- L0 Algorithm received one or more frames with unexpected Spacecraft-ID -->
+            <Event name="L0unexpectedSCID" severity="3"
+                message="L0 ${algName} APE. Unexpected Spacecraft ID. Occurances: ${instances}">
+                <description>One or more TF Frames had an unexpected Spacecraft ID </description>
+                <Argument name="algName" type="java.lang.String" default="NK">
+                    <description>The name of the L0 Algorithm</description>
+                </Argument>
+                <Argument name="instances" type="java.lang.Integer" default="0">
+                    <description>The number of frames the problem occured in</description>
+                </Argument>
+                <Argument name="recievedSCID" type="java.lang.Integer" default="0">
+                    <description>The received Spacecraft ID</description>
+                </Argument>
+                <Argument name="expectedSCID" type="java.lang.Integer" default="0">
+                    <description>The expected Spacecraft ID</description>
+                </Argument>
+            </Event>
+            <!-- "L0packetLogClosed" will be raised by L0 algorithms in case the packet log DataSet used
+                is closed. By default thats after 24h. -->
+            <Event name="L0packetLogClosed" severity="1" message="${algName} closed packet log DataSet.">
+                <Argument name="algName" type="java.lang.String" />
+                <Argument name="dataSetName" type="java.lang.String" />
+            </Event>
+            <!-- L0 Algorithm received one or more frames with FEC errors -->
+            <Event name="FrameFecError" severity="3"
+                message="L0 ${algName} APE. TF Frame checksum doesn't match FEC. Occurances: ${instances}">
+                <description>One or more frames had a FEC field which didn't match the calculated
+                    checksum. Only applicable for Frames with a FEC field
+                </description>
+                <Argument name="algName" type="java.lang.String" default="NK">
+                    <description>The name of the L0 Algorithm</description>
+                </Argument>
+                <Argument name="instances" type="java.lang.Integer" default="0">
+                    <description>The number of frames the problem occured in</description>
+                </Argument>
+                <Argument name="lastGoodErtMilli" type="java.lang.Long" default="0">
+                    <description>
+                        Earth Reception Time since 1958 epoch of the last good frame before the error.
+                    </description>
+                </Argument>
+            </Event>
+            <!-- L0 Algorithm received one or more frames with VCID errors -->
+            <Event name="FrameVcidError" severity="3"
+                message="${algName} APE. Frame Discarded: VCID Not as expected. Received: ${receivedVcid} Expected: ${expectedVcid}.">
+                <description>A VCID error occurred.
+                </description>
+                <Argument name="algName" type="java.lang.String" default="NK">
+                    <description>The name of the L0 Algorithm</description>
+                </Argument>
+                <Argument name="lastGoodErtMilli" type="java.lang.Long" default="0">
+                    <description>
+                        Earth Reception Time since 1958 epoch of the last good frame before the error.
+                    </description>
+                </Argument>
+                <Argument name="expectedVcid" type="java.lang.Integer" default="0">
+                    <description>
+                        Is the Expected Virtual Channel Identifier.
+                    </description>
+                </Argument>
+                <Argument name="receivedVcid" type="java.lang.Integer" default="0">
+                    <description>
+                        Is the Expected Virtual Channel Identifier received.
+                    </description>
+                </Argument>
+            </Event>
+            <!-- L0 Algorithm Frame resync -->
+            <Event name="FrameResync" severity="3"
+                message="${algName} frame re-synchronisation: skipped ${numSkippedBytes} bytes after frame ${lastGoodEvcfc}">
+                <Argument name="algName" type="java.lang.String" default="NK">
+                    <description>The name of the L0 Algorithm</description>
+                </Argument>
+                <Argument name="numSkippedBytes" type="java.lang.Long" default="0">
+                    <description>
+                        Number of bytes skipped in order to find the next frame synchronisation marker
+                    </description>
+                </Argument>
+                <Argument name="lastGoodEvcfc" type="java.lang.Long" default="0">
+                    <description>
+                        Extended Virtual Channel Frame Counter of the last frame before the re-synchronisation
+                    </description>
+                </Argument>
+            </Event>
+            <!-- L0 Algorithm identified missing transfer frames -->
+            <Event name="MissingFrames" severity="3"
+                message="${algName} APE missed ${numMissingFrames} frames">
+                <description>
+                    One or more missing transfer frames identified. Calculation is based on
+                    Frame VCID and the number reported is modulo 256.
+                </description>
+                <Argument name="algName" type="java.lang.String" default="NK">
+                    <description>
+                        The name of the L0 Algorithm.
+                    </description>
+                </Argument>
+                <Argument name="numMissingFrames" type="java.lang.Integer" default="0">
+                    <description>
+                        The number of missing frames modulo 256.
+                    </description>
+                </Argument>
+                <Argument name="currentErtMilli" type="java.lang.Long" default="0">
+                    <description>
+                        Current frame's Earth Reception Time since 1958 epoch.
+                    </description>
+                </Argument>
+                <Argument name="currentEvcfc" type="java.lang.Long" default="0">
+                    <description>
+                        Current frame's Extended Virtual Channel Frame Counter.
+                    </description>
+                </Argument>
+                <Argument name="lastGoodErtMilli" type="java.lang.Long" default="0">
+                    <description>
+                        ERT of the last frame before the gap since 1958 epoch.
+                    </description>
+                </Argument>
+                <Argument name="lastGoodEvcfc" type="java.lang.Long" default="0">
+                    <description>
+                        EVCFC of the last frame before the gap.
+                    </description>
+                </Argument>
+            </Event>
+            <!-- L0 Algorithm identified missing PUS Packets -->
+            <Event name="MissingPackets" severity="3"
+                message="L0 ${algName} APE. ${numPackets} Missing Packets for APID: ${apid}  ">
+                <description>One or more missing packets on the APID. All packets are expected to be
+                    received in order.
+                </description>
+                <Argument name="algName" type="java.lang.String" default="NK">
+                    <description>The name of the L0 Algorithm</description>
+                </Argument>
+                <Argument name="numPackets" type="java.lang.Integer" default="0">
+                    <description>The number of frames the problem occured in</description>
+                </Argument>
+                <Argument name="apid" type="java.lang.Integer" default="0">
+                    <description>The on-baord Application ID of the packets</description>
+                </Argument>
+                <!-- details of the last packet before the gap and the first packet after the gap -->
+                <Argument name="beforeSSC" type="java.lang.Integer" default="0">
+                    <description>The SSC of the last packet before the gap </description>
+                </Argument>
+                <Argument name="afterSSC" type="java.lang.Integer" default="0">
+                    <description>The SSC of the first packet after the gap </description>
+                </Argument>
+                <Argument name="beforeOBT" type="java.lang.Double" default="0.0">
+                    <description>The OBT of the last packet before the gap </description>
+                </Argument>
+                <Argument name="afterOBT" type="java.lang.Double" default="0.0">
+                    <description>The OBT of the first packet after the gap </description>
+                </Argument>
+            </Event>
+            <!-- Summary missing packets on all apids error. This event is intended to prevent the need
+                for floods of APID specific MissingPackets events -->
+            <Event name="MissingPktsSummary" severity="3"
+                message="L0 ${algName} APE. ${numPackets} Missing Packets over multiple APIDs ">
+                <description>Multiple missing packets identified accross multiple APIDs.
+                </description>
+                <Argument name="algName" type="java.lang.String" default="NK">
+                    <description>The name of the L0 Algorithm</description>
+                </Argument>
+                <Argument name="numPackets" type="java.lang.Integer" default="0">
+                    <description>The number of frames the problem occured in</description>
+                </Argument>
+                <!-- details of the last packet before the gap and the first packet after the gap -->
+                <Argument name="beforeAPID" type="java.lang.Integer" default="0">
+                    <description>The APID of the last packet before the gap</description>
+                </Argument>
+                <Argument name="afterAPID" type="java.lang.Integer" default="0">
+                    <description>The APID of the first packet after the gap</description>
+                </Argument>
+                <Argument name="beforeSSC" type="java.lang.Integer" default="0">
+                    <description>The SSC of the last packet before the gap </description>
+                </Argument>
+                <Argument name="afterSSC" type="java.lang.Integer" default="0">
+                    <description>The SSC of the first packet after the gap </description>
+                </Argument>
+                <Argument name="beforeOBT" type="java.lang.Double" default="0.0">
+                    <description>The OBT of the last packet before the gap </description>
+                </Argument>
+                <Argument name="afterOBT" type="java.lang.Double" default="0.0">
+                    <description>The OBT of the first packet after the gap </description>
+                </Argument>
+            </Event>
+            <!-- L0 Algorithm identified corrupted PUS Packets -->
+            <Event name="CorruptPacket" severity="3" message="L0 ${algName} APE. Corrupt packet received ">
+                <description>One or more packets had a PEC field which didn't match the calculated
+                    checksum.
+                </description>
+                <Argument name="algName" type="java.lang.String" default="NK">
+                    <description>The name of the L0 Algorithm</description>
+                </Argument>
+                <!-- details of the last packet before the corrupt packet -->
+                <Argument name="beforeAPID" type="java.lang.Integer" default="0">
+                    <description>The APID of the last packet before the gap</description>
+                </Argument>
+                <Argument name="beforeSSC" type="java.lang.Integer" default="0">
+                    <description>The SSC of the last packet before the gap </description>
+                </Argument>
+                <Argument name="beforeOBT" type="java.lang.Double" default="0.0">
+                    <description>The OBT of the last packet before the gap </description>
+                </Argument>
+            </Event>
+            <!-- Summary of corrupt packets error. -->
+            <Event name="CorruptPktsSummary" severity="3"
+                message="L0 ${algName} APE. ${numPackets} Corrupt Packets received ">
+                <description>Multiple missing packets identified accross multiple APIDs.
+                </description>
+                <Argument name="algName" type="java.lang.String" default="NK">
+                    <description>The name of the L0 Algorithm</description>
+                </Argument>
+                <Argument name="numPackets" type="java.lang.Integer" default="0">
+                    <description>The number of packets the problem occured in</description>
+                </Argument>
+                <!-- details of the last packet before the gap and the first packet after the gap -->
+                <Argument name="beforeAPID" type="java.lang.Integer" default="0">
+                    <description>The APID of the last packet before the sequence of corrupt packets
+                    </description>
+                </Argument>
+                <Argument name="afterAPID" type="java.lang.Integer" default="0">
+                    <description>The APID of the first packet after the sequence of corrupt packets
+                    </description>
+                </Argument>
+                <Argument name="beforeSSC" type="java.lang.Integer" default="0">
+                    <description>The SSC of the last packet before the sequence of corrupt packets
+                    </description>
+                </Argument>
+                <Argument name="afterSSC" type="java.lang.Integer" default="0">
+                    <description>The SSC of the first packet after the sequence of corrupt packets
+                    </description>
+                </Argument>
+                <Argument name="beforeOBT" type="java.lang.Double" default="0.0">
+                    <description>The OBT of the last packet before the sequence of corrupt packets
+                    </description>
+                </Argument>
+                <Argument name="afterOBT" type="java.lang.Double" default="0.0">
+                    <description>The OBT of the first packet after the sequence of corrupt packets
+                    </description>
+                </Argument>
+            </Event>
+            <!-- L0 Algorithm identified duplicate Packets. This is expected to occur when the MDA buffer
+                is re-transmittd. This will happen if there is an algorithm failover. -->
+            <Event name="DuplicatePacket" severity="2"
+                message="L0 ${algName} APE. Duplicate packets received ">
+                <description>One or more packets arrived which had already been processed.
+                </description>
+                <Argument name="algName" type="java.lang.String" default="NK">
+                    <description>The name of the L0 Algorithm</description>
+                </Argument>
+                <!-- details of the packet used to identify subsequent packets as duplicates -->
+                <Argument name="latestOBT" type="java.lang.Double" default="0.0">
+                    <description>The OBT of the last packet before the earlier packets were recieved
+                    </description>
+                </Argument>
+                <Argument name="latestAPID" type="java.lang.Integer" default="0">
+                    <description>The APID of the last packet before the earlier packets were
+                        recieved
+                    </description>
+                </Argument>
+                <Argument name="latestSSC" type="java.lang.Integer" default="0">
+                    <description>The SSC of the last packet before the earlier packets were recieved
+                    </description>
+                </Argument>
+            </Event>
+            <!-- Summary of duplicates packets warning. -->
+            <Event name="DuplicatePktsSummary" severity="2"
+                message="L0 ${algName} APE. ${numPackets} Duplicate Packets received ">
+                <description>Multiple missing packets identified accross multiple APIDs.
+                </description>
+                <Argument name="algName" type="java.lang.String" default="NK">
+                    <description>The name of the L0 Algorithm </description>
+                </Argument>
+                <Argument name="numPackets" type="java.lang.Integer" default="0">
+                    <description>The number of packets the problem occured in </description>
+                </Argument>
+                <!-- details of the last packet before the duplicate sequence and the first packet after -->
+                <Argument name="beforeAPID" type="java.lang.Integer" default="0">
+                    <description>The APID of the last packet before the duplicates </description>
+                </Argument>
+                <Argument name="afterAPID" type="java.lang.Integer" default="0">
+                    <description>The APID of the first packet after the duplicates </description>
+                </Argument>
+                <Argument name="beforeSSC" type="java.lang.Integer" default="0">
+                    <description>The SSC of the last packet before the duplicates </description>
+                </Argument>
+                <Argument name="afterSSC" type="java.lang.Integer" default="0">
+                    <description>The SSC of the first packet after the duplicates </description>
+                </Argument>
+                <Argument name="beforeOBT" type="java.lang.Double" default="0.0">
+                    <description>The OBT of the last packet before the duplicates </description>
+                </Argument>
+                <Argument name="afterOBT" type="java.lang.Double" default="0.0">
+                    <description>The OBT of the first packet after the duplicates </description>
+                </Argument>
+            </Event>
+        </System>
+
+        <System name="IpcL1">
+            <description>Space system elements of the Level 1 IPC sub-system.</description>
+            <!-- GEO Calibration -->
+            <Activity name="L1GeocalibApe" urn="urn:ape:L1-GEOCALIB-stub" reference="activities/L1GEOCALIBstub_ssm.xml">
+                <description>L1 Geocalib algorithm stub.</description>
+            </Activity>
+            <!-- Image Navigation and Registration -->
+            <Activity name="L1InrAfd" urn="urn:ape:L1-INR-stub" reference="activities/L1INRstub_ssm.xml">
+                <description>L1 INR algorithm stub.</description>
+            </Activity>
+            <Activity name="AduApe" urn="urn:ape:ADU" reference="activities/ADU_ssm.xml">
+                <description>L1 ADU algorithm stub.</description>
+            </Activity>
+        </System>
+    </System>
+
+
+    <System name="FCI" reference="fci-ipc.xml" />
+
+    <System name="LI">
+        <description>Lightning Imager instrument processing chain sub-system.</description>
+
+        <!-- IPC Mode and configuration -->
+        <System name="processingMode">
+
+            <!-- Flag defining whether the LI chain is in RTP or RTN processing mode [PI-ADD-06340] RTP
+                = Real Time Processing, RTN = Real Time Non-Processing. In RTN no level 1 data is generated or disseminated.
+                The LI chain rules read the latest value of this parameter, such that it can be updated dynamically -->
+            <Parameter name="LIprocessingMode" type="java.lang.String" defaultValue="RTP" >
+                <DuplicateCheck type="java.lang.String" event="liProcessingModeChange" severity="1" valChangeCheck="true"/>
+            </Parameter>
+
+             <Event name="liProcessingModeChange" severity="1" message=" LIprocessingMode is changed">
+                <description>LIprocessingMode changed</description>
+             </Event>
+
+            <!-- An activity set the LI chain processing mode . The activitiy is a python script -->
+            <Activity name="setLIprocessingMode" urn="script:python:setParam">
+                <description> This command sets the LI chain processing mode </description>
+                <Argument name="paramPath" type="java.lang.String" default="/MTGI/LI/processingMode/LIprocessingMode">
+                    <description>The processing mode parameter.</description>
+                </Argument>
+                <!-- Using a string enumeration which is latter converted to a LinkCommands -->
+                <Argument type="java.lang.String" name="value" default="RTP"
+                    description="Enumeration of allowed values">
+                    <description>Real Time Processing or Real Time Non-Processing</description>
+                    <allowed>RTP</allowed>
+                    <allowed>RTN</allowed>
+                </Argument>
+                <Script type="python" pathToScript="../scripts/setParameter.py" />
+            </Activity>
+
+        </System>
+
+        <System name="IpcL0">
+            <description>Level 0 sub-system.</description>
+            <Activity name="L0LiApe" urn="urn:ape:L0-LI" reference="activities/L0-LI_ssm.xml">
+                <description>Level 0 lightning algorithm.</description>
+            </Activity>
+            <Activity name="L0LiQL" urn="">
+                <Parameter name="apeStatus" type="java.lang.String" />
+                <!-- Drools populated arguments from L0-LI-APE, corresponding to the L0 Li RCEvent arguments -->
+                <Argument name="repeatCycle" type="java.lang.Integer" default="0" />
+            </Activity>
+
+            <Activity name="L0LiAfd" urn="urn:ape:L0-LI-AFD" reference="activities/L0-LI-AFD_ssm.xml">
+                <description>Level 0 lightning algorithm.</description>
+            </Activity>
+        </System>
+
+        <System name="IpcL1">
+            <Activity name="L1LiBkgApe" urn="urn:ape:L1-BKGIMG-stub" reference="activities/L1BKGIMGstub_ssm.xml">
+                <description>Background Image processor stub algorithm for LI chain. A mono-instance
+                    algorithm
+                </description>
+            </Activity>
+            <Activity name="L1LiEventsApe" urn="urn:ape:L1-EVENTS-stub" reference="activities/L1EVENTSstub_ssm.xml">
+                <description>Events processor stub algorithm for LI chain. A mono-instance algorithm
+                </description>
+            </Activity>
+            <Activity name="L1LiLmkApe" urn="urn:ape:L1-LI-LMK-stub" reference="activities/L1-LI-LMK-stub_ssm.xml">
+                <description>Level 1 Landmark algorithm. This is a fake/stub.</description>
+            </Activity>
+            <Activity name="L1LiInrApe" urn="urn:ape:L1-LI-INR-stub" reference="activities/L1-LI-INR-stub_ssm.xml">
+                <description>L1 LI INR algorithm stub.</description>
+            </Activity>
+            <!-- GEO Calibration -->
+            <Activity name="L1LiGeocalibApe" urn="urn:ape:L1-LI-GEOCALIB-stub" reference="activities/L1-LI-GEOCALIB-stub_ssm.xml">
+                <description>LI L1 Geocalib algorithm stub.</description>
+            </Activity>
+            <Activity name="L1LiQL" urn="">
+                <Parameter name="apeStatus" type="java.lang.String" />
+                <!-- Drools populated arguments from L0-LI-APE, corresponding to the L0 Li RCEvent arguments -->
+                <Argument name="repeatCycle" type="java.lang.Integer" default="0" />
+            </Activity>
+            <Activity name="L1EvtsLiAfd" urn="urn:ape:L1-LI-AFD" reference="activities/L1-LI-AFD_ssm.xml">
+                <description>LI L1 AFD.</description>
+            </Activity>
+            <Activity name="L1EvtsLiAfd4L2Pf" urn="urn:ape:L1-LI-AFD" reference="activities/L1-LI-AFD_ssm.xml">
+                <description>LI L1 AFD.</description>
+            </Activity>
+            <Activity name="L1BkgLiAfd" urn="urn:ape:L1-LI-AFD" reference="activities/L1-LI-AFD_ssm.xml">
+                <description>LI L1 AFD.</description>
+            </Activity>
+            <Activity name="L1BkgLiAfd4L2Pf" urn="urn:ape:L1-LI-AFD" reference="activities/L1-LI-AFD_ssm.xml">
+                <description>LI L1 AFD.</description>
+            </Activity>
+        </System>
+
+        <!-- LI Chain rules -->
+        <System name="rules">
+            <description>The processing rules for the LI chain.</description>
+
+            <Activity name="LiChainRules" urn="urn:rules:">
+                <description>Orchestration rules governing the processing of lightning science data.
+                </description>
+
+                <Parameter name="executionTime" type="java.lang.Long">
+                    <description>Time in milliseconds to execute the rules</description>
+                </Parameter>
+                <Parameter name="saturation" type="java.lang.Double">
+                    <description>Percentage of thread's time executing rules compared to idling
+                    </description>
+                </Parameter>
+                <Parameter name="facts" type="java.lang.Integer">
+                    <description>Number of facts in the rules working memory</description>
+                </Parameter>
+                <Parameter name="iterations" type="java.lang.Integer">
+                    <description>Number of iterations of rules before all facts are processed
+                    </description>
+                </Parameter>
+                <Parameter name="executions" type="java.lang.Integer">
+                    <description>Number of iterations of rules since activity started</description>
+                </Parameter>
+                <Parameter name="parameterValuesProcessed" type="java.lang.Integer">
+                    <description>Parameter values input to rules since start of activity
+                    </description>
+                </Parameter>
+                <Parameter name="eventsProcessed" type="java.lang.Integer">
+                    <description>Events input to rules since start of activity</description>
+                </Parameter>
+
+                <Parameter type="java.lang.Boolean" name="Suspended" defaultValue="false"> <description>Flag to suspend </description> </Parameter>
+
+                <Activity name="LiChainRulesUpgrade" urn="urn:rules:UPDATE">
+                    <description>Activity that updates existing rules to a given version.
+                    </description>
+                    <Argument name="version" type="java.lang.String">
+                        <description>The version of the rules the activity will update the rules to.
+                        </description>
+                    </Argument>
+                </Activity>
+
+                <Artifact group="com.cgi.idpf.distribution.drools" artifact="li-chain"
+                    version="0.9.0" />
+                <!-- Arguments of the LiChainRules activity -->
+                <Argument name="L0warmStart" type="java.lang.Boolean" default="true">
+                    <description> Flag defining Warm (or cold) start from saved L0 parameters
+                    </description>
+                </Argument>
+                <Argument name="L1warmStart" type="java.lang.Boolean" default="true">
+                    <description> Flag defining Warm (or cold) start from saved L1 parameters
+                    </description>
+                </Argument>
+                <!-- Subscribing to ALL events under /MTGI/Common -->
+                <subscribe>/MTGI/Common</subscribe>
+                <!-- Subscribing to events and parametrs under LI -->
+                <subscribe>/MTGI/LI</subscribe>
+                <!-- Subscribing to ALL events under /links/mc. This contains upload events when MOF
+                    files arrive -->
+                <subscribe>/links/mc</subscribe>
+            </Activity>
+
+            <!-- Flags defining whether individual rules are enabled [PI-M&C-35180] The flags are outside
+                of the LI chain rules (LiChainRules activity ) to allow for dynamic updates.
+                The chain rules read the latest value of the relevant parameter -->
+
+            <!-- L0 Auto-Start within the chain rules -->
+            <Parameter name="Suspended" type="java.lang.Boolean" defaultValue="false">
+                <description>Flag to suspend </description>
+            </Parameter>
+            <Parameter name="L0LiAutoStart" type="java.lang.Boolean" defaultValue="true" />
+
+            <!-- L0 enable/disable flags -->
+            <Parameter name="L0LiAfdEnabled" type="java.lang.Boolean" defaultValue="true" />
+            <Parameter name="L0LiQlEnabled" type="java.lang.Boolean" defaultValue="true" />
+
+            <!-- L1 enable/disable flags -->
+            <Parameter name="L1LiBkgApeEnabled" type="java.lang.Boolean" defaultValue="true" />
+            <Parameter name="L1LiEvtsEnabled" type="java.lang.Boolean" defaultValue="true" />
+            <Parameter name="L1EvtsLiAfdEnabled" type="java.lang.Boolean" defaultValue="true" />
+            <Parameter name="L1BkgLiAfdEnabled" type="java.lang.Boolean" defaultValue="true" />
+            <Parameter name="L1EvtsLiAfd4L2PfEnabled" type="java.lang.Boolean" defaultValue="true" />
+            <Parameter name="L1BkgLiAfd4L2PfEnabled" type="java.lang.Boolean" defaultValue="true" />
+            <Parameter name="L1LiQlEnabled" type="java.lang.Boolean" defaultValue="true" />
+            <Parameter name="L1lmkEnabled" type="java.lang.Boolean" defaultValue="true" />
+            <Parameter name="L1inrEnabled" type="java.lang.Boolean" defaultValue="true" />
+            <Parameter name="L1MofAduEnabled" type="java.lang.Boolean" defaultValue="true" />
+            <Parameter name="L1DppAduEnabled" type="java.lang.Boolean" defaultValue="true" />
+            <Parameter name="L1GeoCalibEnabled" type="java.lang.Boolean" defaultValue="true" />
+
+            <!-- Failover rules -->
+            <Parameter name="L0LiFailoverEnabled" type="java.lang.Boolean" defaultValue="true" />
+            <Parameter name="L0LiAfdFailoverEnabled" type="java.lang.Boolean" defaultValue="true" />
+            <Parameter name="L1LiAfdFailoverEnabled" type="java.lang.Boolean" defaultValue="true" />
+            <!-- RC Monitor Enable/disable -->
+            <Parameter name="RCmonitorEnabled" type="java.lang.Boolean" defaultValue="false" />
+
+            <!-- Activity setting all LI chain rules for L0 processing -->
+            <Activity name="setL0rules" urn="script:python:setL0rules">
+                <description>Activity to allow the user to set all the chain rules for Level 0
+                </description>
+                <!-- Arguments of the activity -->
+                <Argument name="L0LiAutoStart" type="java.lang.Boolean" default="true"
+                    description="Boolean state for the L0FciAutoStart trigger rule">
+                </Argument>
+                <Argument name="L0LiAfdEnabled" type="java.lang.Boolean" default="true"
+                    description="Boolean state for the L0LiAfdEnabled trigger rule">
+                </Argument>
+                <Argument name="L0LiQlEnabled" type="java.lang.Boolean" default="true"
+                    description="Boolean state for the L0LiQlEnabled trigger rule">
+                </Argument>
+                <Script type="python" pathToScript="../scripts/setLiChainRules.py" />
+            </Activity>
+
+            <!-- Activity setting all LI chain rule for L1 processing
+                 Note that all rules are disabled by setting the LIprocessingMode to RTN -->
+            <Activity name="setL1rules" urn="script:python:setL1rules">
+                <description>Activity to allow the user to set all the chain rules for Level 1
+                </description>
+                <!-- Arguments of the activity -->
+                <Argument name="L1LiBkgApeEnabled" type="java.lang.Boolean" default="true"
+                    description="Boolean state for the L1LiBkgApeEnabled trigger rule">
+                </Argument>
+                <Argument name="L1LiEvtsEnabled" type="java.lang.Boolean" default="true"
+                    description="Boolean state for the L1LiEvtsEnabled trigger rule">
+                </Argument>
+                <Argument name="L1EvtsLiAfdEnabled" type="java.lang.Boolean" default="true"
+                    description="Boolean state for the L1EvtsLiAfdEnabled trigger rule">
+                </Argument>
+                <Argument name="L1BkgLiAfdEnabled" type="java.lang.Boolean" default="true"
+                    description="Boolean state for the L1BkgLiAfdEnabled trigger rule">
+                </Argument>
+                <Argument name="L1EvtsLiAfd4L2PfEnabled" type="java.lang.Boolean" default="true"
+                    description="Boolean state for the L1EvtsLiAfd4L2PfEnabled trigger rule">
+                </Argument>
+                <Argument name="L1BkgLiAfd4L2PfEnabled" type="java.lang.Boolean" default="true"
+                    description="Boolean state for the L1BkgLiAfd4L2PfEnabled trigger rule">
+                </Argument>
+                <Argument name="L1LiQlEnabled" type="java.lang.Boolean" default="true"
+                    description="Boolean state for the L1LiQlEnabled trigger rule">
+                </Argument>
+                <Argument name="L1inrEnabled" type="java.lang.Boolean" default="true"
+                    description="Boolean state for the L1inrEnabled trigger rule">
+                </Argument>
+                <Argument name="L1MofAduEnabled" type="java.lang.Boolean" default="true"
+                    description="Boolean state for the L1MofAduEnabled trigger rule">
+                </Argument>
+                <Argument name="L1DppAduEnabled" type="java.lang.Boolean" default="true"
+                    description="Boolean state for the L1DppAduEnabled trigger rule">
+                </Argument>
+                <Argument name="L1GeoCalibEnabled" type="java.lang.Boolean" default="true"
+                    description="Boolean state for the L1GeoCalibEnabled trigger rule">
+                </Argument>
+                <Script type="python" pathToScript="../scripts/setLiChainRules.py" />
+            </Activity>
+
+        </System>
+
+        <System name="InstrumentStatus">
+            <description>
+                Collection of parameters describing the current status of the LI instrument
+                (as opposed to e.g. status of LI-chain settings)
+            </description>
+
+            <!-- The current Repeat Sequence Identifier -->
+            <Parameter name="repeatSequenceIdentifier" type="java.lang.String" defaultValue="!! undefined !!" />
+
+            <!-- The current Repeat Cycle Type -->
+            <Parameter name="repeatCycleType" type="java.lang.String" defaultValue="!! undefined !!" />
+
+            <!-- The current LI Mode (Nominal/Decontamination) -->
+            <Parameter name="LiMode" type="java.lang.String" defaultValue="!! undefined !!" />
+
+            <!-- The current Repeat Cycle Number TODO: align this name-->
+            <Parameter name="repeatCycleNumber" type="java.lang.Integer" defaultValue="999999" />
+
+            <!-- The current Repeat Sequence Number -->
+            <Parameter name="repeatSequenceNumber" type="java.lang.Integer" defaultValue="999999" />
+
+            <System name="ValueNames">
+                <description>
+                    Constants defining names for specific values of some of the instrument attributes
+                    as encoded within the ICU packets.
+                </description>
+                <Parameter name="repeatSequenceIdentifier" type="java.lang.String" defaultValue="0=FDSS 1=ISS 2=RSS 99=UNKNOWN" />
+                <Parameter name="repeatCycleType" type="java.lang.String" defaultValue="0=FDSSS 1=LAC1 2=LAC2 99=UNKNOWN" />
+                <Parameter name="liMode" type="java.lang.String" defaultValue="0=nominal 1=decontamination 99=UNKNOWN" />
+            </System>
+        </System>
+
+
+        <!-- LI Chain rules -->
+        <System name="MON">
+
+            <Activity name="LiRcMonitor" urn="urn:rules:">
+
+                <!-- Daily log -->
+                <Event name="DailyMonitorLog" message="Daily monitor log: ">
+                    <Argument name="L0NumOfChunksTransferred" type="java.lang.String" />
+                    <Argument name="L1bEventNumOfChunksTransferred" type="java.lang.String" />
+                    <Argument name="L1bBckNumOfChunksTransferred" type="java.lang.String" />
+                    <Argument name="repeatCycleNumber" type="java.lang.Integer" />
+                </Event>
+
+                <!-- RC named elements -->
+
+                <Parameter type="java.lang.Boolean" name="Suspended" defaultValue="false"> <description>Flag to suspend </description> </Parameter>
+                <Parameter name="repeatSequenceIdentifier" type="java.lang.String" defaultValue="!! undefined !!" />
+                <Parameter name="repeatCycleType" type="java.lang.String" defaultValue="!! undefined !!" />
+                <Parameter name="liMode" type="java.lang.String" defaultValue="!! undefined !!" />
+
+                <!-- Repeat Cycle Number -->
+                <Parameter name="repeatCycleNumber" type="java.lang.Integer" defaultValue="1" />
+                <Parameter name="repeatSequenceNumber" type="java.lang.Integer" defaultValue="1" />
+
+                <!-- Repeat Cycle Number -->
+                <Parameter name="repeatCycleStartTime" type="java.lang.String" defaultValue="1970-001T23:59:59.999" />
+
+                <!-- Ingested => percentage of ingested frames in the current repeat cycle -->
+                <Parameter name="L0Ingested" type="java.lang.Integer" defaultValue="0" />
+                <Parameter name="L1EvtIngested" type="java.lang.Integer" defaultValue="0" />
+                <Parameter name="L1BckIngested" type="java.lang.Integer" defaultValue="0" />
+                <!-- Number of Events in L0 APE -->
+                <Parameter name="NrOfEvents" type="java.lang.String" defaultValue="ND" />
+                <!-- ICIDs -->
+                <Parameter name="L0Icid" type="java.lang.String" defaultValue="ND" />
+                <Parameter name="L1BIcid" type="java.lang.String" defaultValue="ND" />
+                <!-- Flags &amp; Context => FCImode -->
+                <Parameter name="L0FlagAndContext" type="java.lang.String" defaultValue="ND" />
+                <Parameter name="L1bEvtFlagAndContext" type="java.lang.String" defaultValue="ND" />
+                <Parameter name="L1bBckFlagAndContext" type="java.lang.String" defaultValue="ND" />
+                <!-- Complete => number of chunks created -->
+                <Parameter name="L0Complete" type="java.lang.Integer" defaultValue="0" />
+                <Parameter name="L1bEvtComplete" type="java.lang.Integer" defaultValue="0" />
+                <Parameter name="L1bBckComplete" type="java.lang.Integer" defaultValue="0" />
+                <!-- Complete => total number of chunks created -->
+                <Parameter name="L0CompleteTotal" type="java.lang.Integer" defaultValue="0" />
+                <Parameter name="L1bEvtCompleteTotal" type="java.lang.Integer" defaultValue="0" />
+                <Parameter name="L1bBckCompleteTotal" type="java.lang.Integer" defaultValue="0" />
+                <!-- Timeliness => based on GS connection, chunks being released, L0+ dataset from L0 AFD, timeliness
+                    of the QL production, timeliness of the file transfer -->
+                <Parameter name="L0Timeliness" type="java.lang.Integer" defaultValue="0" />
+                <Parameter name="L1EvtTimeliness" type="java.lang.Integer" defaultValue="0" />
+                <Parameter name="L1BckTimeliness" type="java.lang.Integer" defaultValue="0" />
+                <!-- Quality/Accuracy -->
+                <Parameter name="L0QualityAccuracy" type="java.lang.String" defaultValue="ND" />
+                <Parameter name="L1bEvtQualityAccuracy" type="java.lang.String" defaultValue="ND" />
+                <Parameter name="L1bBckQualityAccuracy" type="java.lang.String" defaultValue="ND" />
+                <!-- Number of chunks/files transferred -->
+                <Parameter name="L0NumOfChunksTransferred" type="java.lang.Integer" defaultValue="0" />
+                <Parameter name="L1bEvtNumOfChunksTransferred" type="java.lang.Integer" defaultValue="0" />
+                <Parameter name="L1bBckNumOfChunksTransferred" type="java.lang.Integer" defaultValue="0" />
+                <!-- Total number of chunks/files subject of transfer -->
+                <Parameter name="L0NumOfChunksTransferredTotal" type="java.lang.Integer"
+                    defaultValue="0" />
+                <Parameter name="L1bEvtNumOfChunksTransferredTotal" type="java.lang.Integer"
+                    defaultValue="0" />
+                <Parameter name="L1bBckNumOfChunksTransferredTotal" type="java.lang.Integer"
+                    defaultValue="0" />
+                <!-- % of True vs Received Events -->
+                <Parameter name="L1BTrueN" type="java.lang.Integer" defaultValue="0" />
+                <Parameter name="L1BTrueS" type="java.lang.Integer" defaultValue="0" />
+                <Parameter name="L1BTrueE" type="java.lang.Integer" defaultValue="0" />
+                <Parameter name="L1BTrueW" type="java.lang.Integer" defaultValue="0" />
+
+                <!-- Activity is specified after its parameters -->
+                <Artifact group="com.cgi.idpf.distribution.drools" artifact="LI-RC-Monitor"
+                    version="0.9.0" />
+
+                <!-- Arguments of the activity -->
+                <Argument name="repeatSequenceIdentifier" type="java.lang.String" default="!! undefined !!">
+                    <description>The repeatSequenceIdentifier</description>
+                </Argument>
+                <Argument name="repeatCycleType" type="java.lang.String" default="!! undefined !!">
+                    <description>The Repeat Cycle type</description>
+                </Argument>
+                <Argument name="fciMode" type="java.lang.String" default="!! undefined !!">
+                    <description>The fciMode</description>
+                </Argument>
+
+                <Argument name="repeatCycle" type="java.lang.Integer" default="0">
+                    <description>Repeat Cycle number in current repeat sequence for this rule to monitor.
+                    </description>
+                </Argument>
+                <Argument name="repeatSequence" type="java.lang.Integer" default="0">
+                    <description>Repeat Sequence number for this rule to monitor.</description>
+                </Argument>
+                <Argument name="repeatCycleStartTime" type="java.lang.String" default="2015-123T23:59:59.999">
+                    <description>The Repeat Cycle start time</description>
+                </Argument>
+                <Argument name="processingTimeout" type="java.lang.Integer" default="720">
+                    <description>Processing timeout in seconds</description>
+                </Argument>
+
+                <!-- Subscribing to events and parameters under LI-->
+                <subscribe>/MTGI/LI</subscribe>
+                <!-- Subscribing to ALL events under /MTGI/Common -->
+                <subscribe>/MTGI/Common</subscribe>
+                <!-- Subscribing to ALL events under /links/mc. for capture of the ftpOut transfers -->
+                <subscribe>/links/mc</subscribe>
+                <!-- Subscribing to ALL events under /links/mc. for capture of the ftpOut transfers -->
+                <subscribe>/System/Timeliness</subscribe>
+
+            </Activity>
+
+        </System> <!-- LI Chain rules -->
+
+    </System>
+
+    <!-- Time Correlation parameters for MTGI The current values are set from the iOBT/UTC ADU in the
+        MOF-IDPF interface -->
+    <!-- The default values below work with the MDA-SIM defaults: DAY_OFFSET=14611 and SECOND_OFFSET=14 -->
+    <System name="Correlation">
+        <!-- A gradient of zero indicates to the L0 Algorithms that there is no time correlation, and
+            local OS system time will be used instead -->
+        <Parameter name="Gradient" type="java.lang.Double" defaultValue="1.0" unit ="s/s">
+            <description>Time correlation gradient. Seconds of OBT per second of UTC. </description>
+            <XPathCodec packetName="OBTUTC" xpath="//Gradient/@value" />
+        </Parameter>
+        <!-- The Offset correction in seconds (should be a small number) -->
+        <Parameter name="Offset" type="java.lang.Double" defaultValue="0.222" unit ="s" >
+            <description>The Offset correction in seconds </description>
+            <XPathCodec packetName="OBTUTC" xpath="//Offset/@value" />
+        </Parameter>
+        <!-- The on-board time of the last time packet used to calculate the time correlation -->
+        <Parameter name="OBTn" type="java.lang.Double" defaultValue="174805270.0" unit ="s">
+            <description>The on-board time of the last time packet used to calculate the time correlation</description>
+            <XPathCodec packetName="OBTUTC" xpath="//OBTn/@value" />
+        </Parameter>
+        <!-- Ground time (ERT) of the frame to which the last time packet refers, which has been used
+            to calculate the time correlation. It is the number of elapsed seconds since an epoch (1970) -->
+        <!-- N.B: The MOF ICD has a wrong description as the time packet is not always contains in the
+            frame to which it relates -->
+        <Parameter name="UTCn" type="java.lang.Double" defaultValue="1437195655.0" unit ="s" >
+            <description>Ground time (ERT) of the frame to which the last time packet refers</description>
+            <XPathCodec packetName="OBTUTC" xpath="//UTCn/@value" />
+        </Parameter>
+        <!-- We will need to convert these 6 bytes of HEX timestamp (2 bytes for the day, 4 bytes for
+            the milliseconds) into a readable time. -->
+        <Parameter name="ValidityStartTime" type="java.lang.String" defaultValue="0" >
+            <description>Validity Start time for the correlation parameters </description>
+            <XPathCodec packetName="OBTUTC" xpath="//ValidityStartTime/@value" />
+        </Parameter>
+    </System>
+
+    <!-- DummyTimeCorrelation -->
+    <!-- Dummy Correlation Values for validity time checking -->
+    <System name="DummyCorrelation">
+        <Parameter name="ValidityStartTime" type="java.lang.String" defaultValue="0" >
+            <description>Validity Start time for the correlation parameters </description>
+            <XPathCodec packetName="ValTime" xpath="//ValidityStartTime/@value" />
+        </Parameter>
+    </System>
+
+    <!-- MOF Files are ingested by core-services rules. The latest file is set as a parameter in the SSM.
+        The L0 Instrument APEs set the current auxiliary parameters as atrributes of their dataset. This is subsequently
+        set into the SIP Manifest through the L0-FCI-AFD. The L0-FCI-AFD (FCI) also listens to this parameter
+        and forwards the MOF files in SIP format. -->
+    <System name="MOFfile">
+        <System name="IREF">
+            <!-- Name of the latest iCelestialBodiesEphemeris (OEM) file -->
+            <Parameter name="currentFile" type="java.lang.String" defaultValue="NONE" />
+            <!-- Time of last transferred iCelestialBodiesEphemeris file -->
+            <Parameter name="lastTransfer" type="java.lang.String" defaultValue="NONE" />
+            <!-- No Validity Time -->
+        </System>
+        <System name="CBE">
+            <!-- Name of the latest iCelestialBodiesEphemeris (CBE) file -->
+            <Parameter name="currentFile" type="java.lang.String" defaultValue="NONE" />
+            <!-- Time of last transferred iCelestialBodiesEphemeris file -->
+            <Parameter name="lastTransfer" type="java.lang.String" defaultValue="NONE" />
+            <!-- Start Time contained within the file (extracted using ValidatingXmlParser) -->
+            <Parameter name="startTime" type="java.lang.String" defaultValue="0">
+                <XPathCodec packetName="OEM" xpath="//START_TIME/text()" />
+            </Parameter>
+            <!-- Stop Time contained within the file (extracted using ValidatingXmlParser) -->
+            <Parameter name="stopTime" type="java.lang.String" defaultValue="0">
+                <XPathCodec packetName="OEM" xpath="//STOP_TIME/text()" />
+            </Parameter>
+        </System>
+        <System name="GEO">
+            <!-- Name of the latest iGeometric Events file -->
+            <Parameter name="currentFile" type="java.lang.String" defaultValue="NONE" />
+            <!-- Time of last transferred GEO file -->
+            <Parameter name="lastTransfer" type="java.lang.String" defaultValue="NONE" />
+            <!--  No Validity Times  -->
+        </System>
+        <System name="OBTUTC">
+            <!-- Name of the latest OBTUTC file -->
+            <Parameter name="currentFile" type="java.lang.String" defaultValue="NONE" />
+            <!-- Time of last transferred OBTUTC file (shown on Link Dialog) -->
+            <Parameter name="lastTransfer" type="java.lang.String" defaultValue="NONE" />
+            <!-- Validity time contained in Correlation -->
+        </System>
+        <System name="OEM">
+            <!-- Name of the latest OEM (iOrbitParametersOEM) file -->
+            <Parameter name="currentFile" type="java.lang.String" defaultValue="NONE" />
+            <!-- Time of last transferred OEM file -->
+            <Parameter name="lastTransfer" type="java.lang.String" defaultValue="NONE" />
+            <!-- Start Time contained within the file (extracted using ValidatingXmlParser) -->
+            <Parameter name="startTime" type="java.lang.String" defaultValue="0">
+                <XPathCodec packetName="OEM" xpath="//START_TIME/text()" />
+            </Parameter>
+            <!-- Stop Time contained within the file (extracted using ValidatingXmlParser) -->
+            <Parameter name="stopTime" type="java.lang.String" defaultValue="0">
+                <XPathCodec packetName="OEM" xpath="//STOP_TIME/text()" />
+            </Parameter>
+        </System>
+        <System name="OPM">
+            <!-- Name of the latest Orbit and Manoeuvre Parameters (iOrbitParameters) OPM file -->
+            <Parameter name="currentFile" type="java.lang.String" defaultValue="NONE" />
+            <!-- Time of last transferred OPM file -->
+            <Parameter name="lastTransfer" type="java.lang.String" defaultValue="NONE" />
+
+            <!-- Parameters extracted from file: Note that these are not the same names as SSM cannot
+                handle underscore -->
+            <!-- MAN_EPOCH_IGNITION: Start of planned maneuver -->
+            <Parameter name="maneuverIgnition" type="java.lang.String" defaultValue="NONE">
+                <XPathCodec packetName="OPM" xpath="//MAN_EPOCH_IGNITION/text()" />
+            </Parameter>
+
+            <!-- MAN_DURATION: Duration of planned maneuver -->
+            <Parameter name="maneuverDuration" type="java.lang.Double" defaultValue="0.0" units="s">
+                <XPathCodec packetName="OPM" xpath="//MAN_DURATION/text()" />
+            </Parameter>
+            
+            <Parameter name="stopTime" type="java.lang.String" defaultValue="0">
+                <XPathCodec packetName="OPM" xpath="//CREATION_DATE/text()" />
+            </Parameter>
+        </System>
+        <System name="SHED">
+            <!-- Name of the latest iInstrSchedule file -->
+            <Parameter name="currentFile" type="java.lang.String" defaultValue="NONE" />
+            <!-- Time of last transferred iInstrSchedule file -->
+            <Parameter name="lastTransfer" type="java.lang.String" defaultValue="NONE" />
+            <!-- Start Time contained within the file (extracted using ValidatingXmlParser) -->
+            <Parameter name="startTime" type="java.lang.String" defaultValue="0">
+                <XPathCodec packetName="SHED" xpath="//TimeSpan/StartTime/text()" />
+            </Parameter>
+            <!-- Stop Time contained within the file (extracted using ValidatingXmlParser) -->
+            <Parameter name="stopTime" type="java.lang.String" defaultValue="0">
+                <XPathCodec packetName="SHED" xpath="//TimeSpan/EndTime/text()" />
+            </Parameter>
+        </System>
+        <System name="TDM">
+            <!-- Name of the latest TDM Processed Range Meaasurements (iProcessedRange) file -->
+            <Parameter name="currentFile" type="java.lang.String" defaultValue="NONE" />
+            <!-- Time of last transferred iProcessedRange file -->
+            <Parameter name="lastTransfer" type="java.lang.String" defaultValue="NONE" />
+            <!-- Start Time contained within the file (extracted using ValidatingXmlParser) -->
+            <Parameter name="startTime" type="java.lang.String" defaultValue="0">
+                <XPathCodec packetName="TDM" xpath="//START_TIME/text()" />
+            </Parameter>
+            <!-- Stop Time contained within the file (extracted using ValidatingXmlParser) -->
+            <Parameter name="stopTime" type="java.lang.String" defaultValue="0">
+                <XPathCodec packetName="TDM" xpath="//STOP_TIME/text()" />
+            </Parameter>
+        </System>
+    </System> <!-- MOFfile -->
+
+    <!-- There is one file received from the MME-MON which is the iCalibrationFeedback File
+         It is a NetCDF file with tar and SIP formatting [TBC]
+         The file is pulled by the ftpPull task and then a rule unpackages the tar archive and calls the iCal APE to
+         validate the dataset. Upon sucessful validation the file is moved to the PRD directory and made available to
+         the IPC algorithms -->
+    <System name="MONfile">
+        <System name="CAL">
+            <!-- Name of the latest iCalibrationFeedback file -->
+            <Parameter name="currentFile" type="java.lang.String" defaultValue="NONE" />
+            <!-- Time of last transferred iCalibrationFeedback file -->
+            <Parameter name="lastTransfer" type="java.lang.String" defaultValue="NONE" />
+        </System>
+    </System>
+
+    <!-- Two files are received from the MME-DIS: iECWMF and iExtraData -->
+    <System name="DISfile">
+        <System name="ECMWF">
+            <!-- Name of the latest iECWMF file -->
+            <Parameter name="currentFile" type="java.lang.String" defaultValue="NONE" />
+            <!-- Time of last transferred iECWMF file -->
+            <Parameter name="lastTransfer" type="java.lang.String" defaultValue="NONE" />
+        </System>
+        <System name="EXT">
+            <!-- Name of the latest iExtraData file -->
+            <Parameter name="currentFile" type="java.lang.String" defaultValue="NONE" />
+            <!-- Time of last transferred iExtraData file -->
+            <Parameter name="lastTransfer" type="java.lang.String" defaultValue="NONE" />
+        </System>
+    </System>
+
+    <!-- Configurable and controllable timeliness thresholds used for processing rules [L0PR-45440] Configurable
+        per instrument and per dataset -->
+    <System name="TimelinessThresholds">
+        <!-- If the reported timeliness is greater than the threshold, further processing is disabled -->
+        <!-- set TimelinessCheck to false to disable the rules based checks -->
+         <Parameter name="TimelinessCheck" type="java.lang.Boolean"
+            defaultValue="true" />
+            
+        <Parameter name="EnableTimelinessChecksOnStartup" type="java.lang.Boolean"
+            defaultValue="true" />
+
+        <!--Timeliness Threshold Values used by rules to update the Timeliness Thresholds for
+            out of timeliness events and rules for FDSS -->
+        <Parameter name="L0FCItoL1BFDSSLevel1TimelinessMilli" type="java.lang.Integer" defaultValue="1000" />
+        <Parameter name="L0FCItoL1BFDSSmaxTimelinessMilli" type="java.lang.Integer" defaultValue="21000" />
+        <Parameter name="L1BtoL1CFDSSLevel1TimelinessMilli" type="java.lang.Integer" defaultValue="81000" />
+        <Parameter name="L1BtoL1CFDSSmaxTimelinessMilli" type="java.lang.Integer" defaultValue="101000" />
+        <Parameter name="L1CFDSSLevel1TimelinessMilli" type="java.lang.Integer" defaultValue="161000" />
+        <Parameter name="L1CFDSSmaxTimelinessMilli" type="java.lang.Integer" defaultValue="181000" />
+        <Parameter name="L1AFDFDSSLevel1TimelinessMilli" type="java.lang.Integer" defaultValue="190000" />
+        <Parameter name="L1AFDFDSSmaxTimelinessMilli" type="java.lang.Integer" defaultValue="210000" />
+
+        <!-- Timeliness Threshold Values used by rules to update the Timeliness Thresholds for 
+             out of timeliness events and rules for RSS -->
+        <Parameter name="L0FCItoL1BRSSLevel1TimelinessMilli" type="java.lang.Integer" defaultValue="1000" />
+        <Parameter name="L0FCItoL1BRSSmaxTimelinessMilli" type="java.lang.Integer" defaultValue="21000" />
+        <Parameter name="L1BtoL1CRSSLevel1TimelinessMilli" type="java.lang.Integer" defaultValue="60000" />
+        <Parameter name="L1BtoL1CRSSmaxTimelinessMilli" type="java.lang.Integer" defaultValue="80000" />
+        <Parameter name="L1CRSSLevel1TimelinessMilli" type="java.lang.Integer" defaultValue="120000" />
+        <Parameter name="L1CRSSmaxTimelinessMilli" type="java.lang.Integer" defaultValue="140000" />
+        <Parameter name="L1AFDRSSLevel1TimelinessMilli" type="java.lang.Integer" defaultValue="150000" />
+        <Parameter name="L1AFDRSSmaxTimelinessMilli" type="java.lang.Integer" defaultValue="170000" />
+
+        
+        <!--Timeliness Threshold Values for out of timeliness events and rules
+            These are updated by a rule on the new RC event from the parameters above,
+            based on the repeat sequence identifier in the new RC event-->
+        <Parameter name="L0FCItoL1BLevel1TimelinessMilli" type="java.lang.Integer" defaultValue="1000" />
+        <Parameter name="L0FCItoL1BmaxTimelinessMilli" type="java.lang.Integer" defaultValue="21000" />
+        <Parameter name="L1BtoL1CLevel1TimelinessMilli" type="java.lang.Integer" defaultValue="81000" />
+        <Parameter name="L1BtoL1CmaxTimelinessMilli" type="java.lang.Integer" defaultValue="101000" />
+        <Parameter name="L1CLevel1TimelinessMilli" type="java.lang.Integer" defaultValue="161000" />
+        <Parameter name="L1CmaxTimelinessMilli" type="java.lang.Integer" defaultValue="181000" />
+        <Parameter name="L1AFDLevel1TimelinessMilli" type="java.lang.Integer" defaultValue="190000" />
+        <Parameter name="L1AFDmaxTimelinessMilli" type="java.lang.Integer" defaultValue="210000" />
+
+        <Parameter name="L0LiLevel1TimelinessMilli" type="java.lang.Integer" defaultValue="1000" />
+        <Parameter name="L0LiMaxTimelinessMilli" type="java.lang.Integer" defaultValue="21000" />
+
+        <!-- The thresholds are per recipient -->
+        <Parameter name="L0FCItoMONmaxTimelinessMilli" type="java.lang.Integer" defaultValue="1000" />
+        <Parameter name="FCIL1CtoL2PFmaxTimelinessMilli" type="java.lang.Integer" defaultValue="3000" />
+
+        <!-- Script activity to disable timeliness limits checks and rule checks -->
+        <Activity name="disableTimelinessCheck" urn="script:python:disableTimelinessCheck">
+            <description>
+                Disables Timeliness Checks.
+            </description>
+            <Script type="python" pathToScript="../scripts/setTimeliness.py" />
+        </Activity>
+
+        <!-- Script activity to enable timeliness limits checks and rule checks -->
+        <Activity name="enableTimelinessCheck" urn="script:python:enableTimelinessCheck">
+            <description>
+                Enables Timeliness Checks.
+            </description>
+            <Script type="python" pathToScript="../scripts/setTimeliness.py" />
+        </Activity>
+
+        <!-- Script activity called by core services rule to set the inital state of the timeliness limits
+             checks and rule checks to enabled or disabled based onthe value of EnableTimelinessChecksOnStartup -->
+        <Activity name="setInitialTimelinessCheckState" urn="script:python:setInitialTimelinessCheckState">
+            <description>
+                Enables/Disables Initial Timeliness Checks.
+            </description>
+            <Script type="python" pathToScript="../scripts/setTimeliness.py" />
+        </Activity>
+
+
+        <!-- Timeliness enabled/disabled reporting events -->
+        <Event name="TimelinessAlreadyDisabled" severity="3" message="Timeliness Checks Already Disabled" />
+        <Event name="TimelinessAlreadyEnabled" severity="3" message="Timeliness Checks Already Enabled" />
+        <Event name="TimelinessChecksDisabled" severity="1" message="Timeliness Checks Disabled" />
+        <Event name="TimelinessChecksEnabled" severity="1" message="Timeliness Checks Enabled" />
+     
+    </System>
+
+
+    <System name="mcm">
+        <Parameter name="primeServerName" type="java.lang.String" />
+        <Parameter name="backupServerName" type="java.lang.String" />
+        <Parameter name="numberOfunacknowledgedAlarms" type="java.lang.Integer" />
+
+         <Parameter name="fciTraceLevel" type="java.lang.Integer">
+            <DuplicateCheck type="java.lang.Integer" event="fciTraceLevelChange" severity="1" valChangeCheck="true"/>
+            <SyntheticCheck event="fciTraceLevelInvalid" severity="2" type="java.lang.Integer"
+                formula="isValidFCITraceLevel.getValue()" />
+         </Parameter>
+
+        <Parameter name="isValidFCITraceLevel" type="java.lang.Boolean" defaultValue="true"/>
+
+        <Event name="fciTraceLevelChange" severity="1" message=" fciTraceLevel is changed">
+            <description>fciTraceLevel changed</description>
+        </Event>
+
+        <Event name="fciTraceLevelInvalid" severity="3" message="fciTraceLevel is invalid">
+            <description>fciTraceLevel invalid</description>
+        </Event>
+
+        <Parameter name="liTraceLevel" type="java.lang.Integer" >
+            <DuplicateCheck type="java.lang.Integer" event="liTraceLevelChange" severity="1" valChangeCheck="true"/>
+            <SyntheticCheck event="liTraceLevelInvalid" severity="2" type="java.lang.Integer"
+                formula="isValidLITraceLevel.getValue()" />
+         </Parameter>
+
+        <Parameter name="isValidLITraceLevel" type="java.lang.Boolean" defaultValue="true"/>
+
+        <Event name="liTraceLevelInvalid" severity="2" message="liTraceLevel is invalid">
+            <description>liTraceLevel invalid</description>
+        </Event>
+
+        <Event name="liTraceLevelChange" severity="1" message=" liTraceLevel is changed">
+            <description>liTraceLevel changed</description>
+        </Event>
+
+        <Parameter name="mnemonicOfLastExecutedCommand" type="java.lang.String" />
+        <Parameter name="mnemonicOfCurrentCommand" type="java.lang.String" />
+        <Parameter name="mnemonicOfLastReceievedCommand" type="java.lang.String" />
+    </System>
+
+
+    <!-- Raw telemetry parameters to be extracted from Housekeeping packets -->
+    <!-- The content of this element needs to be manually generated from the Spacecraft database -->
+    <System name="rawTMparams" reference="rawTMparams.xml" />
+
+
+    <!-- Reprocessing Mode -->
+    <System name="Reprocessing">
+
+        <Activity name="ReprocessingFci" urn="urn:rules:">
+            <description>
+                Reprocessing rules activity for orchestrating multiple MTG-I processing
+                infrastructures. Time
+                slices are
+                processed by separate FCI Chains.
+            </description>
+
+            <Activity name="ReprocessingFciUpgrade" urn="urn:rules:UPDATE">
+                <description>Activity that updates existing rules to a given version.</description>
+                <Argument name="version" type="java.lang.String">
+                    <description>The version of the rules the activity will update the rules to.
+                    </description>
+                </Argument>
+            </Activity>
+
+            <Parameter name="progressTime" type="java.util.Date" />
+            <Parameter name="activityCount" type="java.lang.Integer" defaultValue="0" />
+            <Parameter name="windowMillisecs" type="java.lang.Integer" defaultValue="3600000" />
+
+            <Artifact group="com.cgi.idpf.distribution.drools" artifact="reprocessing-fci"
+                version="0.9.0">
+            </Artifact>
+
+            <Argument name="time1" type="java.util.Date">
+                <description>Start time for reprocessing time slice 1.</description>
+            </Argument>
+
+            <Argument name="time2" type="java.util.Date">
+                <description>Start time for reprocessing time slice 2.</description>
+            </Argument>
+
+            <Argument name="time3" type="java.util.Date">
+                <description>Start time for reprocessing time slice 3.</description>
+            </Argument>
+
+            <Argument name="time4" type="java.util.Date">
+                <description>Start time for reprocessing time slice 4.</description>
+            </Argument>
+
+            <Argument name="time5" type="java.util.Date">
+                <description>Start time for reprocessing time slice 5.</description>
+            </Argument>
+
+            <Argument name="time6" type="java.util.Date">
+                <description>End time for reprocessing.</description>
+            </Argument>
+
+            <!-- Subscribing to ALL events under FCI -->
+            <subscribe>/MTGI/FCI</subscribe>
+        </Activity>
+
+        <!-- Specialist L0 activities for the Reprocessing -->
+        <System name="PRM">
+            <Activity name="FciPRM" urn="urn:ape:FCI-PRM" reference="activities/FCIprm_ssm.xml">
+                <description> Ape to reprocess FCI packet log datasets.</description>
+            </Activity>
+            <Activity name="HktmPRM" urn="urn:ape:HKTM-PRM" reference="activities/HKTMprm_ssm.xml">
+                <description>Ape to reprocess HKTM packet log datasets.</description>
+            </Activity>
+        </System>
+
+        <System name="IpcPrm">
+            <Activity name="ApeFciPrm" urn="urn:ape:L1-GEOCALIB-stub">
+                </Activity>
+            <Activity name="ApeLiPrm" urn="urn:ape:L1-GEOCALIB-stub">
+            </Activity>
+            <Activity name="ApeHktmPrm" urn="urn:ape:L1-GEOCALIB-stub">
+            </Activity>
+            <Activity name="ApePlatPrm" urn="urn:ape:L1-GEOCALIB-stub">
+            </Activity>
+            <Activity name="ApeDumpPrm" urn="urn:ape:L1-GEOCALIB-stub">
+            </Activity>
+        </System>
+
+        <!-- MTGI Reprocessing system element  TBC  whether needed-->
+        <System name="REP">
+
+            <Activity name="reprocessing" urn="urn:rules:">
+                <description>Reprocessing test rules</description>
+                <Parameter type="java.lang.Boolean" name="Suspended" defaultValue="false"> <description>Flag to suspend </description> </Parameter>
+                <Artifact group="com.cgi.idpf.distribution.drools" artifact="reprocessing"
+                    version="0.9.0" />
+                <Argument name="fciDataset" type="java.lang.String" default="filename">
+                    <description>FCI dataset to generate reprocessing event for.</description>
+                </Argument>
+                <Argument name="hktmDataset" type="java.lang.String" default="filename">
+                    <description>HKTM dataset to generate reprocessing event for.</description>
+                </Argument>
+                <Argument name="dumpDataset" type="java.lang.String" default="filename">
+                    <description>DUMP dataset to generate reprocessing event for.</description>
+                </Argument>
+                <Argument name="platDataset" type="java.lang.String" default="filename">
+                    <description>PLAT dataset to generate reprocessing event for.</description>
+                </Argument>
+                <Argument name="liDataset" type="java.lang.String" default="filename">
+                    <description>LI dataset to generate reprocessing event for.</description>
+                </Argument>
+            </Activity>
+
+            <Event name="ReprocessHKTMdata" severity="1" message="Next HKTM dataset to reprocess">
+                <description>Reprocessing orchestration event </description>
+                <Argument name="inputFilename" type="java.lang.String" default="nofile">
+                    <description>The name of dataset to reprocess</description>
+                </Argument>
+                <Argument name="startPositionInDataSet" type="java.lang.Integer" default="0">
+                    <description>The start position on the dataset</description>
+                </Argument>
+                <Argument name="endPositionInDataSet" type="java.lang.Integer" default="0">
+                    <description>The end position on the dataset</description>
+                </Argument>
+            </Event>
+
+        </System>
+
+
+
+    </System>
+
+</System>

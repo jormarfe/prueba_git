@@ -1,0 +1,151 @@
+<System name="Performance" xmlns="http://eumetsat.org/mtg/ssm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <!-- MCM monitoring -->
+    <System name="mcm" reference="mcm.xml" />
+
+	<Activity name="Archiver" urn="urn:archive:ARCHIVE">
+        <Argument type="java.lang.String" name="partition" default="perf" />
+        <Argument type="java.lang.String" name="type" default="xml" />
+        <Argument type="java.lang.Long" name="autoflush" default="100" />
+        <subscribe>/performance/performanceAdapter</subscribe>
+    </Activity>
+    
+    <System name="Archive">
+        <Activity
+            name="ArchiveReader"
+            urn="urn:archive:REPLAY">
+            <Argument
+                type="java.lang.String"
+                name="partition"
+                default="perf" />
+            <Argument
+                type="java.util.Date"
+                name="preStart" />
+            <Argument
+                type="java.util.Date"
+                name="start" />
+            <Argument
+                type="java.util.Date"
+                name="end" />
+            <Argument
+                type="java.lang.Integer"
+                name="step" />
+            <Argument
+                type="java.lang.Integer"
+                name="interval" />
+            <Argument type="java.lang.Boolean" name="createFake" default="false" />
+        </Activity>
+
+    </System>
+
+    <System name="rules">
+    
+        <Activity name="thrash" urn="urn:rules:">
+            <Artifact group="com.cgi.idpf.distribution.drools" artifact="thrash" version="0.6.3-SNAPSHOT" />
+            <Argument name="apes" type="java.lang.Integer" default="1100" />
+            <Argument name="loops" type="java.lang.Integer" default="600" />
+            <Argument name="threads" type="java.lang.Integer" default="2" />
+            <Argument name="sleepBetweenLoopsMs" type="java.lang.Integer" default="3000" />
+            
+            <Argument name="eventsToRaise" type="java.lang.Integer" default="1" />
+            <Argument name="argEventsToRaise" type="java.lang.Integer" default="0" />
+            <Argument name="alarmsToRaise" type="java.lang.Integer" default="0" />
+            <Argument name="paramsToSet" type="java.lang.Integer" default="0" />
+            <Argument type="java.lang.Boolean" name="callGetParameter" default="false" />
+            <subscribe>/performance/performanceAdapter/</subscribe>
+        </Activity>
+        
+        <Activity name="L1bStubPerformanceLauncher" urn="urn:rules:">
+            <Artifact group="com.cgi.idpf.distribution.drools" artifact="perform-l1bstub" version="0.9.0" />
+            <Argument name="number" type="java.lang.Integer" />
+            <Argument name="apeDuration" type="java.lang.String" default="60" />
+            <!-- Distributed Job Control arguments -->
+            <Argument name="cpusPerTask" type="java.lang.Integer" default="1" />
+            <Argument name="memoryMB" type="java.lang.Integer" default="1000" />
+            <subscribe>/performance/performanceL1bStub/</subscribe>
+            <subscribe>/mcm/</subscribe>
+        </Activity>
+
+        <Activity name="PerformanceStubLauncher" urn="urn:rules:">
+            <Artifact group="com.cgi.idpf.distribution.drools" artifact="perform-performance-stub" version="0.9.0" />
+            <Argument name="number" type="java.lang.Integer" default="1" />
+
+            <Argument name="apeDuration" type="java.lang.String" default="10" />
+            <Argument name="eventsToRaise" type="java.lang.String" default="10" />
+            <Argument name="argEventsToRaise" type="java.lang.String" default="10" />
+            <Argument name="paramsToSet" type="java.lang.String" default="10" />
+            <Argument name="sleepTime" type="java.lang.String" default="1" />
+
+            <!-- Distributed Job Control arguments -->
+            <Argument name="cpusPerTask" type="java.lang.Integer" default="1" />
+            <Argument name="memoryMB" type="java.lang.Integer" default="1000" />
+            <subscribe>/performance/performanceStub/</subscribe>
+            <subscribe>/mcm/</subscribe>
+        </Activity>
+
+         <Activity name="PerformanceAdapterLauncher" urn="urn:rules:">
+            <Artifact group="com.cgi.idpf.distribution.drools" artifact="perform-performance-adapter" version="0.9.0" />
+            <Argument name="number" type="java.lang.Integer" default="1" />
+
+            <Argument name="eventsToRaise" type="java.lang.Integer" default="10" />
+            <Argument name="argEventsToRaise" type="java.lang.Integer" default="10" />
+            <Argument name="paramsToSet" type="java.lang.Integer" default="10" />
+
+            <Argument name="sleep" type="java.lang.Integer" default="0" />
+            <Argument name="loops" type="java.lang.Integer" default="10" />
+            <Argument name="threads" type="java.lang.Integer" default="10" />
+
+            <!-- Distributed Job Control arguments -->
+            <Argument name="cpusPerTask" type="java.lang.Integer" default="1" />
+            <Argument name="memoryMB" type="java.lang.Integer" default="1000" />
+            <subscribe>/performance/performanceStub/</subscribe>
+            <subscribe>/mcm/</subscribe>
+        </Activity>
+    </System>
+
+    <System name="performance">
+        <System name="performanceL1bStub">
+            <Activity name="L1bStub" urn="urn:algorithm:l1b-stub" reference="activities/l1b_stub_ssm.xml" />
+        </System>
+        <System name="performanceStub">
+            <Activity name="performanceStub" urn="urn:algorithm:performance-stub" reference="activities/performance_stub_ssm.xml" />
+        </System>
+        <System name="performanceAdapter">
+            <Parameter name="number" type="java.lang.Integer" />
+            <Parameter name="eventsRaised" type="java.lang.Integer" defaultValue="0"/>
+            <Parameter name="apesLaunched" type="java.lang.Integer" defaultValue="0" />
+            <Parameter name="inProgPerfActs" type="java.lang.Integer" defaultValue="0" />
+            <Parameter name="completedProgPerfActs" type="java.lang.Integer" defaultValue="0" />
+            
+            <Activity name="performanceTask" urn="urn:perf:">
+
+                <Parameter name="perfParam" type="java.lang.Integer" />
+
+                <Event name="perfEvent" severity="2" message="performance event" />
+                <Event name="perfAlarm" severity="3" message="performance alarm" />
+                <Event name="perfEventWithArgs" severity="0" message="event with arguments">
+                    <Argument name="count" type="java.lang.Integer" />
+                </Event>
+
+
+                <Argument name="eventsToRaise" type="java.lang.Integer" default="10" />
+                <Argument name="argEventsToRaise" type="java.lang.Integer" default="10" />
+                <Argument name="alarmsToRaise" type="java.lang.Integer" default="10" />
+                <Argument name="paramsToSet" type="java.lang.Integer" default="10" />
+            	<Argument type="java.lang.Boolean" name="callGetParameter" default="true" />
+
+                <Argument description="How long to sleep between loops" name="sleepBetweenLoopsMs" type="java.lang.Integer"
+                    default="0" />
+                <Argument description="How many loops to complete" name="loops" type="java.lang.Integer"
+                    default="10" />
+                <Argument description="How many concurrent threads to run" name="threads" type="java.lang.Integer"
+                    default="10" />
+
+                <!-- Distributed Job Control arguments -->
+                <Argument name="cpusPerTask" type="java.lang.Integer" default="1" />
+                <Argument name="memoryMB" type="java.lang.Integer" default="1000" />
+
+            </Activity>
+        </System>
+    </System>
+</System>

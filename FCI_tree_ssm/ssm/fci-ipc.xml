@@ -1,0 +1,177 @@
+<System xmlns="http://eumetsat.org/mtg/ssm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <!-- FCI IPC system -->
+    <description>Flexible Combined Imager Instrument Processing Chain system.</description>
+
+
+    <!-- FCI IPC parameters -->
+    <Parameter name="ProcessingMode" type="java.lang.String" defaultValue="RTP">
+        <description>Processing mode of the FCI IPC (either RTP or RTN)</description>
+    </Parameter>
+
+    <!-- FCI IPC events -->
+    <Event name="FileNotFound" severity="1" message="File not found: ${filename}">
+        <description>Event raised to notify the MCM that a file has not been found</description>
+        <Argument name="filename" type="java.lang.String" />
+    </Event>
+    
+    <Event name="MissingPackets" severity="1" message="Missing packet(s): ${packets}">
+        <description>Event raised to notify the MCM that one or more packet(s) is(are) missing.</description>
+        <Argument name="packets" type="java.lang.String" />
+    </Event>
+
+    <!-- FCI IPC rules sub-system -->
+    <System name="Rules">
+        <!-- FCI IPC rules activity -->
+        <Activity name="ChainRules" urn="urn:rules:">
+            <description>
+                Core rules activity for orchestrating the MTG-I processing
+                infrastructure. The core rules deal with monitoring the system and starting
+                activities in specific states.
+            </description>
+
+             <Parameter name="executionTime" type="java.lang.Long">
+                 <description>Time in milliseconds to execute the rules</description>
+             </Parameter>
+             <Parameter name="saturation" type="java.lang.Double">
+                 <description>Percentage of thread's time executing rules compared to idling
+                 </description>
+             </Parameter>
+             <Parameter name="facts" type="java.lang.Integer">
+                 <description>Number of facts in the rules working memory</description>
+             </Parameter>
+             <Parameter name="iterations" type="java.lang.Integer">
+                 <description>Number of iterations of rules before all facts are processed
+                 </description>
+             </Parameter>
+             <Parameter name="executions" type="java.lang.Integer">
+                 <description>Number of iterations of rules since activity started</description>
+             </Parameter>
+             <Parameter name="parameterValuesProcessed" type="java.lang.Integer">
+                 <description>Parameter values input to rules since start of activity
+                 </description>
+             </Parameter>
+             <Parameter name="eventsProcessed" type="java.lang.Integer">
+                 <description>Events input to rules since start of activity</description>
+             </Parameter>
+             
+             <Parameter type="java.lang.Boolean" name="Suspended" defaultValue="false"> <description>Flag to suspend </description> </Parameter>
+
+             <Activity name="FciChainRulesUpgrade" urn="urn:rules:UPDATE">
+                 <description>Activity that updates existing rules to a given version.
+                 </description>
+                 <Argument name="version" type="java.lang.String">
+                     <description>The version of the rules the activity will update the rules to.
+                     </description>
+                 </Argument>
+             </Activity>
+
+             <Artifact group="fr.tas.idpf.ipc.fci.distribution.drools" artifact="fci-ipc" version="1.0.0" />
+
+             <!-- Arguments of the ChainRules activity -->
+             <Argument name="useL0Simu" type="java.lang.Boolean" default="true">
+                 <description>
+                     Whether to use the L0 Simulator or not
+                 </description>
+             </Argument>
+             <Argument name="startTime" type="java.lang.String" default="20151222115959">
+                 <description>
+                     Start time of the L0 data (when using the L0 Simulator)
+                 </description>
+             </Argument>
+             <Argument name="endTime" type="java.lang.String" default="20151222120959">
+                 <description>
+                     End time of the L0 data (when using the L0 Simulator)
+                 </description>
+             </Argument>
+             <Argument name="env" type="java.lang.String" default="DEV">
+                 <description>
+                     Environment of the L0 data (when using the L0 Simulator)
+                 </description>
+             </Argument>
+             <Argument name="L1warmStart" type="java.lang.Boolean" default="true">
+                 <description>
+                     Flag defining Warm (or cold) start from saved L1 parameters
+                 </description>
+             </Argument>
+             <Argument name="L1CconstraintsPath" type="java.lang.String" default="/FCI/Rules/L1cConstraints">
+                <description>SSM path to L1C block geographic constraints used for the L1C triggering rules</description>
+             </Argument>
+
+          <!-- Subscribing to ALL events under /MTGI/FCI -->
+ 	        <subscribe>/MTGI/FCI</subscribe>
+         </Activity> <!-- FCI IPC rules activity -->
+        
+         <!-- L1C Blocks geographic constraints used for the L1C triggering rules in FciRcRules -->
+         <System name="L1cConstraints" reference="l1c-constraints.xml" />
+
+    </System> <!-- FCI IPC rules sub-system -->
+
+    <!-- FCI IPC scripts sub-system -->
+    <System name="Scripts">
+        <!-- An activity to raise an event with it's default arguments. The activitiy is a python script  -->
+        <Activity name="RaiseEvent" urn="script:python:raiseFCIEvent">
+            <description> Test script activity that raises and event at a given severity level. </description>
+            <Argument name="eventPath" type="java.lang.String" default="/pi/tools/testEvent" >
+                <description>The path to the event to raise.</description>
+            </Argument>
+            <Argument type="java.lang.Integer" name="severity" default="1">
+                <description>What severity level this script activity will raise the remote script event at.
+                </description>
+            </Argument>
+            <Script type="python" pathToScript="../scripts/raiseFCIEvent.py" />
+        </Activity>
+
+        <!-- An activity to update the value of a SSM parameter  -->
+        <Activity name="UpdateParameter" urn="script:python:updateFCIParameter">
+            <description> Test script activity that updates a SSM parameter value.</description>
+            <Argument name="parameterPath" type="java.lang.String">
+                <description>Path to the SSM parameter to update.</description>
+            </Argument>
+            <Argument name="newValue" type="java.lang.String">
+                <description>The new parameter value.</description>
+            </Argument>
+            <Script type="python" pathToScript="../scripts/updateFCIParameter.py" />
+        </Activity>
+        
+        <!-- An activity to set the FCI chain processing mode.-->
+        <Activity name="setFCIprocessingMode" urn="script:python:updateFCIParameter">
+            <description> This command sets the FCI chain processing mode</description>
+            <Argument name="parameterPath" type="java.lang.String" default="/MTGI/FCI/ProcessingMode">
+                <description>The processing mode parameter.</description>
+            </Argument>
+            <!-- Using a string enumeration which is latter converted to a LinkCommands -->
+            <Argument type="java.lang.String" name="value" default="RTP"
+                description="Enumeration of allowed values">
+                <description>Real Time Processing or Real Time Non-Processing</description>
+                <allowed>RTP</allowed>
+                <allowed>RTN</allowed>
+            </Argument>
+            <Script type="python" pathToScript="../scripts/updateFCIParameter.py" />
+        </Activity>
+
+        <!-- An activity to simulate FCI L0 APE  -->
+        <Activity name="FciL0Sim" reference="activities/fci_l0_sim_script.xml" urn="script:python:fciL0Sim" />
+
+        <!-- An activity to simulate PFAUX L0 APE  -->
+        <Activity name="PfAuxL0Sim" reference="activities/pfaux_l0_sim_script.xml" urn="script:python:pfauxL0Sim" />
+    </System> <!-- FCI IPC scripts sub-system -->
+
+    <!-- FCI IPC APE sub-system -->
+    <System name="APE">
+        <description>Level 1 Instrument processing chain sub-system.</description>
+        <Activity name="L1B" urn="urn:ape:fci-l1b" reference="activities/fci_l1b_ssm.xml">
+            <description>FCI L1B APE.</description>
+        </Activity>
+        <Activity name="L1C" urn="urn:ape:fci-l1c" reference="activities/fci_l1c_ssm.xml">
+            <description>FCI L1C APE.</description>
+        </Activity>
+        <Activity name="LMK" urn="urn:ape:fci-lmk" reference="activities/fci_lmk_ssm.xml">
+            <description>FCI LMK APE.</description>
+        </Activity>
+        <Activity name="STAR" urn="urn:ape:fci-star" reference="activities/fci_star_ssm.xml">
+            <description>FCI STAR APE.</description>
+        </Activity>            
+    </System> <!-- FCI IPC APE sub-system -->
+
+</System>

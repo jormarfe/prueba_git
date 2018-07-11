@@ -1,0 +1,715 @@
+<System xmlns="http://eumetsat.org/mtg/ssm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>
+        Space system elements specific to monitoring the processing infrastructure system itself.
+    </description>
+
+
+    <!-- Core PI services which are unrelated to the an instrument chain -->
+    <System name="coreServices">
+
+        <!-- The CoreServices rule starts and manages the core services required by the system -->
+        <Activity name="coreServices" urn="urn:rules:">
+            <description>The CoreServices rule starts and manages the core services required by the system </description>
+            <Artifact group="com.cgi.idpf.distribution.drools" artifact="core-services" version="0.9.0" />
+
+            <!-- Subscribing to ALL events under /. TODO: subscription has to be more efficient  -->
+            <subscribe>/</subscribe>
+
+        </Activity>
+
+        <!-- FTP server for inbound ftp transfers from the MOF -->
+        <Activity name="ftpServer" urn="ftpSERVER:">
+            <Argument type="java.lang.String" name="linkPath" default="/links/mc/mof/in" />
+        </Activity>
+
+        <!-- The SNMP Log Adapter (snmpLog) is used to raise SNMP Traps. The Adapter subscribes to MCM events and converts 
+             to SNMP protocol. Clients (e.g. Nagios) may subscribe to these traps -->
+        <Activity name="snmpLog" urn="urn:snmp-log:">
+            <description>SNMP Log Adapter used to raise SNMP Traps. </description>
+            <Argument type="java.lang.String" name="host" default="IIPIMDS-S01">
+                <description>Hostname to use for SNMP Traps.</description>
+            </Argument>
+            <Argument type="java.lang.Integer" name="port" default="162">
+                <description>Port to use for SNMP Traps.</description>
+            </Argument>
+            <Argument type="java.lang.String" name="filter" default="severity>=2"/>
+            <!-- Subscription should be a list of individual high importance events -->
+            <subscribe>/</subscribe> <!-- TODO: Is this subscription required? -->
+        </Activity>
+
+        <!-- The SNMP Agent Adapter (snmpAgent) provides a MIB defined list of queriable parameters. These can be queried 
+             by clients such as Nagios via snmpget commands -->
+        <Activity name="snmpAgent" urn="urn:snmp-agent:">
+            <description>The SNMP Agent Adapter provides a MIB defined list of queriable parameters </description>
+        </Activity>
+
+        <!-- The gemsWriter activity subscribes to events and writes them to a GEMS formated file for transfer to 
+             MME-MON. 
+        -->
+        <Activity name="gemsWriter" urn="gems:">
+            <description>
+                This activity subscribes to events and writes them to a GEMS formated file for transfer.
+            </description>
+            <!-- Defaults to unfiltered, that is, all valid StateValues reported  -->
+            <Argument type="java.lang.String" name="filter" />
+            <!-- The subscribed events -->
+            <subscribe>/</subscribe>
+        </Activity>
+
+        <!-- The ftpPull activity is used to pull files matching a regular expression from a remote location 
+             for IDPF-I this is iCalibration from MME-MON, iECWMF from MME-DIS and iExtData from MME-DIS -->
+        <Activity name="ftpPull" urn="urn:rules:">
+            <description>
+                These are the core orchestration rules applicable to the PI core (excluding chains).
+            </description>
+            <Parameter type="java.lang.Boolean" name="Suspended" defaultValue="false"> <description>Flag to suspend </description> </Parameter>
+            <Artifact group="com.cgi.idpf.distribution.drools" artifact="Ftp-Pull" version="0.9.0" />
+            <Argument type="java.lang.String" name="iCallPath" default="in/iCalFeedback/">
+                <description>
+                    Directory where the iCall should be pulled from.
+                </description>
+            </Argument>
+            <Argument type="java.lang.String" name="ECMWFpath" default="in/ECMWF">
+                <description>
+                    Directory where the ECMWF should be pulled from.
+                </description>
+            </Argument>
+            <subscribe>/</subscribe>
+        </Activity>
+
+        <Activity name="ftpRecover" urn="urn:rules:">
+            <description>Rules which retry failed FTP transfers.</description>
+            <Parameter type="java.lang.Boolean" name="Suspended" defaultValue="false" />
+            <Artifact group="com.cgi.idpf.distribution.drools" artifact="FtpRecovery" version="0.9.0" />
+            <subscribe>/links/mc/mme</subscribe>
+            <subscribe>/links/mc/mof</subscribe>
+            <subscribe>/links/mc/l2pf</subscribe>
+        </Activity>
+
+         <!-- The ftpSequential activity is used to ensure that ftpOut activities that have sequential values in their
+         	arguments are renamed (delivered) on the FtpServer in sequence order -->
+        <Activity name="sequentialFtp" urn="ftpSeq:">
+            <description> These activity ensure that sequential files are delivered (renamed) on the destination FTP service is order</description>
+            <subscribe>/links/mc</subscribe>
+        </Activity>
+
+        <Parameter type="java.lang.Boolean" name="useSequentialFtp" defaultValue="true">
+            <description>Flag to control where sequential FTP is enabled. If false files are renamed by ftpOut activities instead of the sequentialFtp activity</description>
+        </Parameter>
+
+        <Parameter type="java.lang.Integer" name="sequentialFtpTimeout" defaultValue="30" unit="seconds"> 
+            <description>The timeout in which out-of-sequence FTPs are renamed anyway (in seconds))</description>
+        </Parameter>
+
+        <Parameter name="traceRetentionTime" type="java.lang.Integer" defaultValue="24" unit="hours">
+            <description>
+                This parameter determines the time before trace log files are purged.
+            </description>
+        </Parameter>
+ 
+        <Parameter name="ordRetentionTime" type="java.lang.Integer" defaultValue="36" unit="hours">
+            <description>
+                This parameter determines the time before operational real-time data (ORD)is purged.
+            </description>
+        </Parameter>
+
+        <Parameter name="l0PrdRetentionTime" type="java.lang.Integer" defaultValue="36" unit="hours">
+            <description>
+                This parameter determines the time before processing runtime data (PRD) is purged for level 0.
+            </description>
+        </Parameter>
+        
+        <Parameter name="l0HktmPrdRetentionTime" type="java.lang.Integer" defaultValue="60" unit="hours">
+            <description>
+                This parameter determines the time before processing runtime data (PRD) is purged for level 0. 
+            </description>
+        </Parameter>
+    
+        <Parameter name="l1PrdRetentionTime" type="java.lang.Integer" defaultValue="18" unit="hours">
+            <description>
+                This parameter determines the time before processing runtime data (PRD) is purged for level 1.
+            </description>
+        </Parameter>
+    
+         <Parameter name="relocationTime" type="java.lang.Integer" defaultValue="12" unit="hours">
+            <description>
+                This parameter determines the time before processing runtime data (PRD) is move to an archive folder.
+            </description>
+        </Parameter>
+        
+        <Parameter name="hktmRelocationTime" type="java.lang.Integer" defaultValue="36" unit="hours">
+            <description>
+                This parameter determines the time before processing runtime data (PRD) is move to an archive folder.
+            </description>
+        </Parameter>
+
+    </System>
+    
+    <System name="traceCommand">
+        <Activity name="changeTraceLevel" urn="script:python:changeTraceLevel">
+            <description>
+                Changes the trace level for an individual logger.
+            </description>
+            <Argument name="loggerPath" type="java.lang.String" default="/MTGI/FCI/IpcL0/L0FciApe" >
+                <description>
+                    The logger path of the logger in log4j.properties for which to change the level.
+                    This should be the SSM path of the activity.
+                </description>
+                <allowed>/MTGI/FCI/IpcL0/L0FciApe</allowed>
+                <allowed>/MTGI/FCI/IpcL0/L0FciAfd</allowed>
+                <allowed>/MTGI/FCI/IpcL0/L0FciQL</allowed>
+                <allowed>/MTGI/FCI/IpcL1/L1bFciApe</allowed>
+                <allowed>/MTGI/FCI/IpcL1/L1cFciApe</allowed>
+                <allowed>/MTGI/FCI/IpcL1/L1LmkFciApe</allowed>
+                <allowed>/MTGI/FCI/IpcL1/L1StarFciApe</allowed>
+                <allowed>/MTGI/FCI/IpcL1/L1FciQL</allowed>
+                <allowed>/MTGI/FCI/IpcL1/L1FciAfd</allowed>
+                <allowed>/MTGI/FCI/IpcL1/FciL1cQualApe</allowed>
+                <allowed>/MTGI/LI/IpcL0/L0LiApe</allowed>
+                <allowed>/MTGI/LI/IpcL0/L0LiAfd</allowed>
+                <allowed>/MTGI/LI/IpcL1/L1LiBkgApe</allowed>
+                <allowed>/MTGI/LI/IpcL1/L1LiEventsApe</allowed>
+                <allowed>/MTGI/LI/IpcL1/L1LiLmkApe</allowed>
+                <allowed>/MTGI/LI/IpcL1/L1LiInrApe</allowed>
+                <allowed>/MTGI/LI/IpcL1/L1LiGeocalibApe</allowed>
+                <allowed>/MTGI/LI/IpcL1/L1EvtsLiAfd</allowed>
+                <allowed>/MTGI/LI/IpcL1/L1EvtsLiAfd4L2Pf</allowed>
+                <allowed>/MTGI/LI/IpcL1/L1BkgLiAfd</allowed>
+                <allowed>/MTGI/LI/IpcL1/L1BkgLiAfd4L2Pf</allowed>
+                <allowed>/MTGI/Common/IpcL0/L0HktmApe</allowed>
+                <allowed>/MTGI/Common/IpcL0/L0PlatApe</allowed>
+                <allowed>/MTGI/Common/IpcL0/L0DumpRptApe</allowed>
+                <allowed>/MTGI/Common/IpcL1/L1InrAfd</allowed>
+                <allowed>/MTGI/Common/IpcL1/L1GeocalibApe</allowed>
+                <allowed>/MTGI/Reprocessing/PRM/FciPRM</allowed>
+                <allowed>/MTGI/Reprocessing/PRM/HktmPRM</allowed>
+                <allowed>/Test/FciFailFciApe</allowed>
+            </Argument>
+            <Argument name="traceLevel" type="java.lang.Integer" default="3" >
+                <description>The level to change Trace to</description>
+                <allowed>3</allowed> <!-- TRACE -->
+                <allowed>2</allowed> <!-- INFO -->
+                <allowed>1</allowed> <!-- WARN -->
+                <allowed>0</allowed> <!-- OFF -->
+            </Argument>
+            <Script type="python" pathToScript="../scripts/changeTraceLevel.py" />
+        </Activity>
+
+        <Event name="tracingDisabled" severity="1" message="Tracing for ${algName} is disabled.">
+            <description>Event raised when an algorithm starts with disabled tracing.</description>
+            <Argument name="algName" type="java.lang.String" />
+        </Event>
+        <Event name="tracingEnabled" severity="1" message="Tracing for ${algName} is enabled.">
+            <description>Event raised when an algorithm starts with enabled tracing.</description>
+            <Argument name="algName" type="java.lang.String" />
+        </Event>
+
+        <Parameter name="lastUpdate" type="java.lang.String" defaultValue="">
+            <description>
+                Last updated trace level as string 'activityPath:newLevel' with
+                activityPath the SSM path of the activity and newLevel the new
+                trace level as string ('TRACE', 'DEBUG', 'INFO' or 'OFF'). Needed
+                for run-time updates of the trace level.
+            </description>
+        </Parameter>
+    </System>
+
+    <System name="failoverCommand">
+        <Activity name="stopMcmServer" urn="script:python:stopMcmServer">
+            <description>
+                Stops the current McmPrimeServer
+            </description>
+            <Script type="python" pathToScript="../scripts/stopMcmServer.py" />
+        </Activity>
+    </System>
+
+    
+    <!-- Tools to set parameters and raise events -->
+    <System name="tools">
+
+        <!-- An activity to set an integer parameter. The activitiy is a python script -->
+        <Activity name="setIntParameter" urn="script:python:setParam">
+            <description>
+                This command allows an integer parameter at a given space system model path to be assigned a value
+            </description>
+            <Argument name="paramPath" type="java.lang.String" default="/pi/tools/testIntParam" >
+                <description>The parameter to update.</description>
+            </Argument>
+            <Argument name="newValue" type="java.lang.Integer" default="100" >
+                <description>The new integer value to set the parameter to</description>
+            </Argument>
+            <Script type="python" pathToScript="../scripts/setParameter.py" />
+        </Activity>
+        <!-- Default parameter for the above activity -->
+        <Parameter name="testIntParam" type="java.lang.Integer" defaultValue="0" >
+            <description>integer parameter.</description>
+        </Parameter>
+
+        <!-- An activity to set an String parameter. The activitiy is a python script -->
+        <Activity name="setStringParameter" urn="script:python:setParam">
+            <description>
+                This command allows an string parameter at a given space system model path to be assigned a value
+            </description>
+            <Argument name="paramPath" type="java.lang.String" default="/pi/tools/testStringParam" >
+                <description>The parameter to update.</description>
+            </Argument>
+            <Argument name="newValue" type="java.lang.String" default="new value" >
+                <description>The new string value to set the parameter to</description>
+            </Argument>
+            <Script type="python" pathToScript="../scripts/setParameter.py" />
+        </Activity>
+        <!-- Default parameter for the above activity -->
+        <Parameter name="testStringParam" type="java.lang.String" defaultValue="default value" >
+            <description>integer parameter.</description>
+        </Parameter>
+
+        <!-- An activity to set a double parameter. The activitiy is a python script -->
+        <Activity name="setDoubleParameter" urn="script:python:setParam">
+            <description>
+                This command allows a double parameter at a given space system model path to be assigned a value
+            </description>
+            <Argument name="paramPath" type="java.lang.String" default="/pi/tools/testDoubleParam" >
+                <description>The parameter to update.</description>
+            </Argument>
+            <Argument name="newValue" type="java.lang.Double" default="1.2" >
+                <description>The new double value to set the parameter to</description>
+            </Argument>
+            <Script type="python" pathToScript="../scripts/setParameter.py" />
+        </Activity>
+        <!-- Default parameter for the above activity -->
+        <Parameter name="testDoubleParam" type="java.lang.Double" defaultValue="0.0" >
+            <description>integer parameter.</description>
+        </Parameter>
+        
+        <!-- An activity to set an integer parameter. The activitiy is a python script -->
+        <Activity name="setBoolParameter" urn="script:python:setParam">
+            <description>
+                This command allows a boolean parameter at a given space system model path to be assigned a value
+            </description>
+            <Argument name="paramPath" type="java.lang.String" default="/pi/tools/testBoolParam" >
+                <description>The parameter to update.</description>
+            </Argument>
+            <Argument name="newValue" type="java.lang.Boolean" default="false" >
+                <description>The new boolean value to set the parameter to</description>
+            </Argument>
+            <Script type="python" pathToScript="../scripts/setParameter.py" />
+        </Activity>
+        <!-- Default parameter for the above activity -->
+        <Parameter name="testBoolParam" type="java.lang.Boolean" defaultValue="true" >
+            <description>Boolean parameter</description>
+        </Parameter>
+
+        <!-- An activity to raise an event with it's default arguments. The activitiy is a python script  -->
+        <Activity name="raiseEvent" urn="script:python:raiseEvent">
+            <description> Test script activity that raises and event at a given severity level. </description>
+            <Argument name="eventPath" type="java.lang.String" default="/pi/tools/testEvent" >
+                <description>The path to the event to raise.</description>
+            </Argument>
+            <Argument type="java.lang.Integer" name="severity" default="1">
+                <description>What severity level this script activity will raise the remote script event at.
+                </description>
+            </Argument>
+            <Script type="python" pathToScript="../scripts/raiseEvent.py" />
+        </Activity>
+
+        <!-- An activity to enable/disable parmeter check.-->
+        <Activity name="setParametersChecks" urn="script:python:setParametersChecks">
+            <description>
+                This command enables/disables parameter checks for the parameters under the node path.
+            </description>
+            <Argument name="nodePath" type="java.lang.String" default="/MTGI" >
+                <description>
+                    Node Path under which all the parameters are enabled/disabled for checks or
+                    exact path of the parameter itself.
+                </description>
+            </Argument>
+            <Argument name="isDisableChecks" type="java.lang.Boolean" default="true" >
+                <description>flag indicating Enable/Disable parameter checks</description>
+            </Argument>
+            <Script type="python" pathToScript="../scripts/setParameter.py" />
+        </Activity>
+
+        <!-- Default event for the above activity -->
+        <Event name="testEvent" message="A test event">
+            <description>Event raised by this test activity at a given severity level.</description>
+        </Event>
+    </System>
+
+    <SyntheticParameter name="fciStatus" type="java.lang.String" language="python" formula="">
+        <description>
+            This is the status of the FCIchain, summarised or referenced by a script that can analyse any other
+            system in the model.
+        </description>
+        <DuplicateCheck event="fciStatusChange" severity="1" valChangeCheck="true"/>
+    </SyntheticParameter>
+
+    <Event name="fciStatusChange" severity="1" message=" Fci Status is changed">
+        <description>Fci status changed </description>
+    </Event>
+
+    <SyntheticParameter name="inrStatus" type="java.lang.String" language="python" formula="">
+        <description>
+            This is the status of the INR algorithms, summarised or referenced by a script that can analyse any
+            other FCI and Ligntning system in the model.
+        </description>
+    </SyntheticParameter>
+
+    <SyntheticParameter name="linkStatus" type="java.lang.String" language="python" formula="">
+        <description>This parameter summarises the status of all the links.</description>
+    </SyntheticParameter>
+
+    <SyntheticParameter name="liStatus" type="java.lang.String" language="python" formula="">
+        <description>
+            This is the status of the Lightning imager chains, summarised or referenced by a script that can
+            analyse all of the Ligntning chain systems in the model.
+        </description>
+        <DuplicateCheck event="liStatusChange" severity="1" valChangeCheck="true"/>
+    </SyntheticParameter>
+
+    <Event name="liStatusChange" severity="1" message=" Li Status is changed">
+        <description>Li status changed </description>
+    </Event>
+
+    <SyntheticParameter name="overallStatus" type="java.lang.String" language="python" formula="">
+        <description>
+            This parameter summarises the overall status of the PI, including all chains and links.
+        </description>
+    </SyntheticParameter>
+
+    <Event name="outOfLimit" severity="3" message="Parameter out of limits">
+        <description>
+            Event raised when a parameter goes out of limit.
+        </description>
+        <Argument type="java.lang.String" name="parameterPath">
+            <description>The path of the parameter that has exceed limits.</description>
+        </Argument>
+    </Event>
+
+    <Event name="backInLimits" severity="3" message="Parameter is now back within limits">
+        <description>
+            Event raised when a parameter returns within limit thresholds after being out of limit.
+        </description>
+        <Argument type="java.lang.String" name="parameterPath">
+            <description>The path of the parameter that has exceed limits.</description>
+        </Argument>
+    </Event>
+
+    <Event name="apeEventFlood" severity="3" message="An algorithm is generating to many events and has been throttled.">
+        <description>
+            Event raised when a algorithm processing element exceeds the rate at which it is allowed to raise
+            events.
+        </description>
+        <Argument type="java.lang.String" name="algorithmPath">
+            <description>The path of the algorithm that has exceed limits.</description>
+        </Argument>
+    </Event>
+
+    <Event name="backToNominalFlow" severity="1" message="A throttled algorithm returned to nominal flow.">
+        <description>
+            Event raised when a algorithm processing element returns from the overflow to the rate at which it is allowed to raise
+            events.
+        </description>
+        <Argument type="java.lang.String" name="algorithmPath">
+            <description>The path of the algorithm that returned to nominal rate.</description>
+        </Argument>
+    </Event>
+
+    <Event name="chunkCompletenessAlert" severity="3" message="Data chunk incomplete.">
+        <description>
+            Event raised when a data chunk is detected as being below the completeness quality threshold.
+        </description>
+        <Argument type="java.lang.Integer" name="chunkId">
+            <description>The chunk id.</description>
+        </Argument>
+        <Argument type="java.lang.String" name="datasetName">
+            <description>The name of the dataset containing the incomplete chunk.</description>
+        </Argument>
+        <Argument type="java.lang.Long" name="timestamp">
+            <description>Timestamp when the chunk completeness issue was detected.</description>
+        </Argument>
+        <Argument type="java.lang.Integer" name="threshold">
+            <description>The requested completelness threshold.</description>
+        </Argument>
+        <Argument type="java.lang.Integer" name="completeness">
+            <description>The actual completelness value.</description>
+        </Argument>
+    </Event>
+
+    <Event name="chunkAccuracyAlert" severity="3" message="Data chunk inaccurate.">
+        <description>
+            Event raised when a data chunk is detected as being below the completeness accuracy threshold.
+        </description>
+        <Argument type="java.lang.Integer" name="chunkId">
+            <description>The chunk id.</description>
+        </Argument>
+        <Argument type="java.lang.String" name="datasetName">
+            <description>The name of the dataset containing the incomplete chunk.</description>
+        </Argument>
+        <Argument type="java.lang.Long" name="timestamp">
+            <description>Timestamp when the chunk completeness issue was detected.</description>
+        </Argument>
+        <Argument type="java.lang.Integer" name="threshold">
+            <description>The requested accuracy threshold.</description>
+        </Argument>
+        <Argument type="java.lang.Integer" name="accuracy">
+            <description>The actual accuracy value.</description>
+        </Argument>
+    </Event>
+
+    <Event name="chunkTimelinessAlert" severity="3" message="Data chunk processing time exceeded limit.">
+        <description>
+            Event raised when a data chunk takes too long to process.
+        </description>
+        <Argument type="java.lang.Integer" name="chunkId">
+            <description>The chunk id.</description>
+        </Argument>
+        <Argument type="java.lang.String" name="datasetName">
+            <description>The name of the dataset containing the incomplete chunk.</description>
+        </Argument>
+        <Argument type="java.lang.Long" name="timestamp">
+            <description>Timestamp when the chunk timeliness issue was detected.</description>
+        </Argument>
+        <Argument type="java.lang.Integer" name="threshold">
+            <description>The requested time to process threshold.</description>
+        </Argument>
+        <Argument type="java.lang.Integer" name="accuracy">
+            <description>The actual time to process value.</description>
+        </Argument>
+    </Event>
+
+    <Event name="dataReadyInternal" severity="3" message="Data is ready for another internal facility.">
+        <description>
+            Event raised when data is generated and available to another facility.
+        </description>
+        <Argument type="java.lang.String" name="filename">
+            <description>The name of the data file.</description>
+        </Argument>
+    </Event>
+
+    <Event name="dataReceivedInternal" severity="3" message="Data has been received from another internal facility.">
+        <description>
+            Event raised when data is received from another facility.
+        </description>
+        <Argument type="java.lang.String" name="filename">
+            <description>The name of the data file.</description>
+        </Argument>
+    </Event>
+
+    <Event name="dataReadyDissemination" severity="3" message="Data ready for dissemination.">
+        <description>
+            Event raised when data is ready to be disseminated to external users.
+        </description>
+        <Argument type="java.lang.String" name="filename">
+            <description>The name of the data file.</description>
+        </Argument>
+    </Event>
+
+    <Event name="filePurged" severity="1" message="Purged file.">
+        <description>
+            Event raised when a prd or ord file is deleted.
+        </description>
+        <Argument type="java.lang.String" name="filename">
+            <description>The name of the data file.</description>
+        </Argument>
+         <Argument type="java.lang.Integer" name="period" unit="hours">
+            <description>The period after which the file was purged.</description>
+        </Argument>
+    </Event>
+    
+     <Event name="fileRelocated" severity="1" message="Relocated file.">
+        <description>
+            Event raised when a prd file is relocated.
+        </description>
+        <Argument type="java.lang.String" name="filename">
+            <description>The name of the data file.</description>
+        </Argument>
+         <Argument type="java.lang.Integer" name="period" unit="hours">
+            <description>The period after which the file was relocated.</description>
+        </Argument>
+    </Event>
+
+
+    <Activity name="stopPIinstance" urn="script:python:stopPiInstance">
+        <description>
+            Stops FCI and LI chains gracefully, and then stops coreservices .
+        </description>
+
+        <Event name="started" severity="3" message="PI shutdown sequence started">
+            <description> Event raised when a the shutdown sequence has begun </description>
+        </Event>
+
+        <Event name="completed" severity="3" message="PI shutdown sequence completed">
+            <description> Event raised when a the shutdown sequence completes </description>
+        </Event>
+
+        <Script type="python" pathToScript="../scripts/stopPiInstance.py" />
+    </Activity>
+
+    <System name="hardware">
+        <description>
+            Model elements describing the hardware the processing infrastructure is running on. This is used to
+            monitor and control the hardware.
+        </description>
+
+        <System name="cpu">
+            <description>System elements related to monitoring of the hardware, specifically CPU.</description>
+            <Activity name="SysMon" urn="urn:sysmon:">
+                <description>Monitors PI Servers CPU.</description>
+                <Parameter name="vendor" type="java.lang.String">
+                    <description>Name of the CPU vendor.</description>
+                </Parameter>
+                <Parameter name="model" type="java.lang.String">
+                    <description>Model of the CPU.</description>
+                </Parameter>
+                <Parameter name="Mhz" type="java.lang.Integer">
+                    <description>Clock speed of the CPU in Mhz.</description>
+                </Parameter>
+                <Parameter name="TotalCpus" type="java.lang.Integer">
+                    <description>Total number of CPUs.</description>
+                </Parameter>
+                <Parameter name="PhysicalCpus" type="java.lang.Integer">
+                    <description>Total number of physical CPUs.</description>
+                </Parameter>
+                <Parameter name="CoresPerCpu" type="java.lang.Integer">
+                    <description>Total cores per CPUs.</description>
+                </Parameter>
+
+                <Parameter name="UserTime" type="java.lang.Integer" unit="percentage">
+                    <description>The amount of time the CPU has been busy executing code in user space.</description>
+                </Parameter>
+                <Parameter name="SysTime" type="java.lang.Integer" unit="percentage">
+                    <description>The amount of time the CPU has been busy executing code in kernel space.</description>
+                </Parameter>
+                <Parameter name="IdleTime" type="java.lang.Integer" unit="percentage">
+                    <description>The amount of time the CPU has not been busy, i.e., idle.</description>
+                </Parameter>
+                <Parameter name="WaitTime" type="java.lang.Integer" unit="percentage">
+                    <description>The amount of time the CPU has had to wait for an event to occur, such as sync waits,
+                        or
+                        I/O waits.
+                    </description>
+                </Parameter>
+                <Parameter name="NiceTime" type="java.lang.Integer" unit="percentage">
+                    <description>The amount of time the CPU has been executing multiple processes demanding more cycles
+                        than
+                        the CPU can provide.
+                    </description>
+                </Parameter>
+                <Parameter name="Combined" type="java.lang.Integer" unit="percentage">
+                    <description>The sum of user and system time.</description>
+                </Parameter>
+                <Parameter name="IrqTime" type="java.lang.Integer" unit="percentage">
+                    <description>CPU allocated to hardware interrupts.</description>
+                </Parameter>
+                <Parameter name="collectionCount" type="java.lang.Long">
+                    <description>Number of garbage collections so far.</description>
+                </Parameter>
+                <Parameter name="collectionTime" type="java.lang.Long" unit="milliseconds">
+                    <description>Time garbage collecting so far.</description>
+                </Parameter>
+                <Parameter name="pendingFinalisation" type="java.lang.Integer">
+                    <description>Number of objects pending finalisation.</description>
+                </Parameter>
+                <Parameter name="heapUsed" type="java.lang.Long">
+                    <description>Bytes of heap used.</description>
+                </Parameter>
+                <Parameter name="heapMax" type="java.lang.Long">
+                    <description>Bytes of heap maximum..</description>
+                </Parameter>
+                <Parameter name="nonHeapUsed" type="java.lang.Long">
+                    <description>Bytes of non-heap used.</description>
+                </Parameter>
+                <Parameter name="nonHeapMax" type="java.lang.Long">
+                    <description>Bytes of non-heap maximum.</description>
+                </Parameter>
+                <Parameter name="deadlockThreads" type="java.lang.Integer">
+                    <description>Number of deadlocked threads.</description>
+                </Parameter>
+                <Parameter name="monitorDeadlockThreads" type="java.lang.Integer">
+                    <description>Number of threads deadlocked by monitors.</description>
+                </Parameter>
+                <Parameter name="daemonThreadCount" type="java.lang.Integer">
+                    <description>Number of daemon threads.</description>
+                </Parameter>
+                <Parameter name="threadCount" type="java.lang.Integer">
+                    <description>Total number of threads.</description>
+                </Parameter>
+                <Argument type="java.lang.Long" name="updateTime" default="1000" unit="ms">
+                    <description>The interval between gathering CPU metrics in milliseconds.</description>
+                </Argument>
+            </Activity>
+        </System>
+    </System>
+    
+    <!-- Tools to set parameters and raise events -->
+    <System name="utilities">
+
+        <Activity name="setAlgorithmBaseVersion" urn="urn:method:setAlgorithmBaseVersion(version)">
+            <description>
+                This activity sets the version number for the C++ library containing the algorithm base class.
+            </description>
+            <Argument name="version" type="java.lang.String">
+                <description>The version of the libraries to update to.</description>
+            </Argument>
+        </Activity>
+
+        <Activity name="setAlgorithmVersion" urn="urn:method:setAlgorithmVersion(algorithm,version)">
+            <description>
+                This actvity sets the version number for the C++ library containing a given APE algorithm.
+            </description>
+            <Argument name="algorithmLibName" type="java.lang.String">
+                <description>The name of the algorithm library to update.</description>
+            </Argument>
+            <Argument name="version" type="java.lang.String">
+                <description>The version of the libraries to update to.</description>
+            </Argument>
+        </Activity>
+
+        <Activity name="setDasPluginVersion" urn="urn:method:setDasPluginVersion(pluginLibName,version)">
+            <description>
+                This actvity sets the version number for the C++ library containing a given DAS plugin.
+            </description>
+            <Argument name="pluginLibName" type="java.lang.String">
+                <description>The name of the DAS plugin library to update.</description>
+            </Argument>
+            <Argument name="version" type="java.lang.String">
+                <description>The version of the libraries to update to.</description>
+            </Argument>
+        </Activity>
+
+        <Activity name="updateSsm" urn="TODO">
+            <description>
+                This command updates the space system model, reading in a new XMl file.
+            </description>
+            <Argument name="newSsmFilePath" type="java.lang.String">
+                <description>The path to the new SSM file.</description>
+            </Argument>
+        </Activity>
+        
+        <Parameter name="ssmVersion" type="java.lang.String">
+            <description>
+                 The path to the SSM file.  
+            </description>
+        </Parameter>
+        
+
+    </System>
+
+    <System name="mcm">
+
+        <Parameter name="mnemonicOfLastExecutedCommand" type="java.lang.String" />
+        <Parameter name="mnemonicOfCurrentCommand" type="java.lang.String" />
+        <Parameter name="mnemonicOfLastReceievedCommand" type="java.lang.String" />
+
+        <System name="alarm">
+            <Parameter name="numberOfTotalAlarms" type="java.lang.Integer" defaultValue="0" />
+            <Parameter name="numberOfAckowledgeAlarms" type="java.lang.Integer" defaultValue="0" />
+            <SyntheticParameter name="numberOfunacknowledgedAlarms" type="java.lang.Integer" defaultValue="0"
+                formula="numberOfTotalAlarms.getValue() - numberOfAckowledgeAlarms.getValue()"/>
+        </System>
+
+    </System>
+    <Parameter name="AlmSound" type="java.lang.Boolean" defaultValue="False">
+        <description>Flag that indicates if Alarm sound is enabled or not.</description>
+    </Parameter>
+</System>

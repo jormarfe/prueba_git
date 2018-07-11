@@ -1,0 +1,363 @@
+<System xmlns="http://eumetsat.org/mtg/ssm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Event name="piOverheadOol" severity="1" message="PI overhead is out of limit" />
+
+    <Event name="l0FciTimelinessOol" severity="3" message="L0Fci chunk availability timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+
+
+    <Parameter name="L1bFciSecondsPerBlockRate" type="java.lang.Double" />
+    <Parameter name="piOverheadInMilliseconds" type="java.lang.Long">
+        <LimitCheck event="piOverheadOol" parent="/System/Timeliness" severity="2" type="java.lang.Long"
+            lowerBound="0" upperBound="5000" />
+    </Parameter>
+
+     <!-- Timeliness of the L0 APEs are measured as the time when the last contributing packet (frame) arrives on   -->
+     <!-- the MDA Link to the time when the chunk dataset becomes available for downstream processing. This is      -->
+     <!-- calculated based on the time of the chunk event. The limit value is the nominal timeliness apportionment. -->
+    <Parameter name="l0FciTimelinessMilli" type="java.lang.Integer" default="0" >
+        <LimitCheck event="l0FciTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+            lowerBound="0" upperBound="1000" />
+    </Parameter>
+
+    <Parameter name="L1bFciProjectedRCcompletion" type="java.lang.Long" />
+
+    <!-- Common Chain -->
+    <!-- OOL Events for the timeliness limit check thresholds -->
+    <Event name="L0HktmChkTimelinessOol" severity="3" message="L0-HKTM chunk availability timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="L0PlatChkTimelinessOol" severity="3" message="L0-PLAT chunk availability timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="L0DumpRptChkTimelinessOol" severity="3" message="L0-DUMP chunk availability timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+
+     <!-- The Timeliness (in milliseconds) of the L0-HKTM chunk is the difference between the correlated OBT of
+          the last contributing packet, and the current system time  -->
+    <Parameter name="L0HktmChkTimeliness" type="java.lang.Integer" defaultValue="0">
+        <description>Timeliness in milliseconds of the latest L0-HKTM CCCDS Packet Log chunk</description>
+        <LimitCheck event="L0HktmChkTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+            lowerBound="0" upperBound="1000" />
+    </Parameter>
+
+    <!-- The Timeliness (in milliseconds) of the L0-PLAT chunk is the difference between the correlated OBT of
+          the last contributing packet, and the current system time  -->
+    <Parameter name="L0PlatChkTimeliness" type="java.lang.Integer" defaultValue="0">
+        <description>Timeliness in milliseconds of the latest L0-PLAT CCCDS Packet Log chunk</description>
+        <LimitCheck event="L0PlatChkTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+            lowerBound="0" upperBound="1000" />
+    </Parameter>
+    
+    <!-- The Timeliness (in milliseconds) of the L0-DumpRpt chunk is the difference between the correlated OBT of
+          the last contributing packet, and the current system time  -->
+    <Parameter name="L0DumpRptChkTimeliness" type="java.lang.Integer" defaultValue="0">
+        <description>Timeliness in milliseconds of the latest L0-DUMP CCCDS Packet Log chunk</description>
+        <LimitCheck event="L0DumpRptChkTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+            lowerBound="0" upperBound="1000" />
+    </Parameter>
+
+
+    <!-- FCI Chain -->
+    <Event name="L0FciChkTimelinessOol" severity="3" message="L0-FCI CCSDS chunk availability timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="L0FciDeMultiChkTimelinessOol" severity="3" message="L0-FCI DeMultiplexed chunk availability level 1 timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="L0FciDeMultiChkProcTimelinessOol" severity="3" message="L0-FCI DeMultiplexed chunk availability level 2 timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="L1bChkTimelinessOol" severity="3" message="FCI L1B chunk availability level 1 timeliness (${timeliness}) out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="L1bChkProcTimelinessOol" severity="3" message="FCI L1B chunk availability level 2 timeliness (${timeliness}) out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="L1cChkTimelinessOol" severity="3" message="FCI L1C chunk availability level 1timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="L1cChkProcTimelinessOol" severity="3" message="FCI L1C chunk availability level 2 timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="L1cQualChkTimelinessOol" severity="3" message="FCI L1C quality chunk availability timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="FDHSIChkTimelinessOol" severity="3" message="FCI FDHSI chunk availability level 1 timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="FDHSIChkProcTimelinessOol" severity="3" message="FCI FDHSI chunk availability level 2 timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="HRFIChkTimelinessOol" severity="3" message="FCI HRFI chunk availability level 1 timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="HRFIChkProcTimelinessOol" severity="3" message="FCI HRFI chunk availability level 2 timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <!-- The chunk dataset timeliness is always based on the sensing time of the last contributing data compared
+         to the processing end time. This is calculated as the difference of the correlated OBT of the last
+         contributing packet against the processing end time in UTC.
+         As such the timeliness (latency) expected to accumulate over the processing chain -->
+
+    <!-- The Timeliness (in milliseconds) of the latest L0-FCI CCCDS Packet Log chunk is the difference between
+           the correlated OBT of the last contributing packet, and the current system time  -->
+    <Parameter name="L0FciChkTimeliness" type="java.lang.Integer" defaultValue="0">
+        <description>Timeliness in milliseconds of the latest L0-FCI CCCDS Packet Log chunk</description>
+        <!-- Limits are 0 to 2 seconds -->
+        <LimitCheck event="L0FciChkTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+            lowerBound="0" upperBound="1000" />
+    </Parameter>
+    <!-- The Timeliness (in milliseconds) of the latest L0-FCI De-Multiplexed (for L1B) chunk. This is the time at
+         which the chunk is available in the prd for L1B processing. -->
+     <Parameter name="L0FciDeMultiChkTimeliness"
+         type="java.lang.Integer" defaultValue="0">
+        <description>Timeliness in milliseconds of the latest L0-FCI De-Multiplexed chunk for L1B</description>
+        <SyntheticCheck event="L0FciDeMultiChkTimelinessOol" parent="/System/Timeliness" severity="1" type="java.lang.Integer"
+             formula="newValue &lt; _MTGI_TimelinessThresholds_L0FCItoL1BLevel1TimelinessMilli.getValue()" />
+        <SyntheticCheck event="L0FciDeMultiChkProcTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+             formula="newValue &lt; _MTGI_TimelinessThresholds_L0FCItoL1BmaxTimelinessMilli.getValue()" /> 
+    </Parameter>
+    
+    <!-- The Timeliness (in milliseconds) of the latest L1B chunk. This is the time at which the L1B chunk is available
+         in the prd for subsequent internal PI processing. -->
+    <Parameter name="L1bChkTimeliness" type="java.lang.Integer" defaultValue="0">
+        <description>Timeliness in milliseconds of the latest L1B chunk </description>
+        <SyntheticCheck event="L1bChkTimelinessOol" parent="/System/Timeliness" severity="1" type="java.lang.Integer"
+             formula="newValue &lt; _MTGI_TimelinessThresholds_L1BtoL1CLevel1TimelinessMilli.getValue()" />
+        <SyntheticCheck event="L1bChkProcTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+             formula="newValue &lt; _MTGI_TimelinessThresholds_L1BtoL1CmaxTimelinessMilli.getValue()" />
+    </Parameter>
+
+    <!-- The Timeliness (in milliseconds) of the latest L1C chunk -->
+    <Parameter name="L1cChkTimeliness" type="java.lang.Integer" defaultValue="0">
+        <description>Timeliness in milliseconds of the latest L1C chunk </description>
+        <SyntheticCheck event="L1cChkTimelinessOol" parent="/System/Timeliness" severity="1" type="java.lang.Integer"
+             formula="newValue &lt; _MTGI_TimelinessThresholds_L1CLevel1TimelinessMilli.getValue()" />
+        <SyntheticCheck event="L1cChkProcTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+             formula="newValue &lt; _MTGI_TimelinessThresholds_L1CmaxTimelinessMilli.getValue()" />
+    </Parameter>
+
+    <!-- The Timeliness (in milliseconds) of the latest L1C-Qual chunk -->
+    <Parameter name="L1cQualChkTimeliness" type="java.lang.Integer" defaultValue="0">
+        <description>Timeliness in milliseconds of the latest L1C-Qual chunk </description>
+        <!-- Limits are 10 to 160 seconds -->
+        <LimitCheck event="L1cQualChkTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+            lowerBound="1000" upperBound="150000" />
+    </Parameter>
+
+    <!-- The Timeliness (in milliseconds) of the latest FDHSI Chunk (output from L1-FCI-AFD) -->
+    <Parameter name="FDHSIChkTimeliness" type="java.lang.Long" defaultValue="0">
+        <description>Timeliness in milliseconds of the latest FDHSI chunk </description>
+        <SyntheticCheck event="FDHSIChkTimelinessOol" parent="/System/Timeliness" severity="1" type="java.lang.Integer"
+             formula="newValue &lt; _MTGI_TimelinessThresholds_L1AFDLevel1TimelinessMilli.getValue()" />
+        <SyntheticCheck event="FDHSIChkProcTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+             formula="newValue &lt; _MTGI_TimelinessThresholds_L1AFDmaxTimelinessMilli.getValue()" />
+    </Parameter>
+
+    <!-- The Timeliness (in milliseconds) of the latest HRFI Chunk (output from L1-FCI-AFD) -->
+    <Parameter name="HRFIChkTimeliness" type="java.lang.Long" defaultValue="0">
+        <description>Timeliness in milliseconds of the latest HRFI chunk </description>
+        <SyntheticCheck event="HRFIChkTimelinessOol" parent="/System/Timeliness" severity="1" type="java.lang.Integer"
+             formula="newValue &lt; _MTGI_TimelinessThresholds_L1AFDLevel1TimelinessMilli.getValue()" />
+        <SyntheticCheck event="HRFIChkProcTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+             formula="newValue &lt; _MTGI_TimelinessThresholds_L1AFDmaxTimelinessMilli.getValue()" />
+    </Parameter>
+
+    <!-- LI Chain -->
+    <Event name="L0LiChkTimelinessOol" severity="3" message="L0-LI chunk availability level 1 timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="L0LiChkProcTimelinessOol" severity="3" message="L0-LI chunk availability level 2 timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="BkgChkTimelinessOol" severity="3" message="LI BKG chunk availability timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="EvtsChkTimelinessOol" severity="3" message="LI Events chunk availability timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="L1AfdBkgChkTimelinessOol" severity="3" message="L1 BKG Chunk chunk availability timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+    <Event name="L1AfdEvtChkTimelinessOol" severity="3" message="L1 Events Chunk from L1-LI-AFD availability timeliness (${timeliness}) is out of limits" >
+        <Argument name="path" type="java.lang.String" default="none">
+            <description>The event path</description>
+        </Argument>
+        <Argument name="timeliness" type="java.lang.Integer" default="0">
+            <description>The limit</description>
+        </Argument>
+    </Event>
+
+
+     <!-- The Timeliness (in milliseconds) of the L0-LI CCCDS Packet Log chunk is the difference between the
+           correlated OBT of the last contributing packet, and the current system time  -->
+    <Parameter name="L0LiChkTimeliness" type="java.lang.Integer" defaultValue="0">
+        <description>Timeliness in milliseconds of the latest L0-LI CCCDS Packet Log chunk</description>
+        <LimitCheck event="L0LiChkTimelinessOol" parent="/System/Timeliness" severity="1" type="java.lang.Integer"
+             upperBound="1000" />
+        <LimitCheck event="L0LiChkProcTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+            lowerBound="1000" upperBound="21000" />
+    </Parameter>
+
+    <!-- The Timeliness (in milliseconds) of the latest Li Background Image Chunk/Dataset (Output from BKG Stub) -->
+    <Parameter name="BkgChkTimeliness" type="java.lang.Integer" defaultValue="0">
+        <description>Timeliness in milliseconds of the latest Li Background Image chunk </description>
+        <!-- Limits are 5 to 80 seconds -->
+        <LimitCheck event="BkgChkTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+            lowerBound="5000" upperBound="80000" />
+    </Parameter>
+
+    <!-- The Timeliness (in milliseconds) of the latest Li Events Chunk/Dataset (Output from Events Stub) -->
+    <Parameter name="EvtsChkTimeliness" type="java.lang.Integer" defaultValue="0">
+        <description>Timeliness in milliseconds of the latest LI Events chunk </description>
+        <!-- Limits are 5 to 80 seconds -->
+        <LimitCheck event="EvtsChkTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+            lowerBound="5000" upperBound="80000" />
+    </Parameter>
+
+    <!-- The Timeliness (in milliseconds) of the latest L1 BKG Chunk (output from L1-LI-AFD) -->
+    <Parameter name="L1AfdBkgChkTimeliness" type="java.lang.Integer" defaultValue="0">
+        <description>Timeliness in milliseconds of the latest L1 BKG Chunk from L1-LI-AFD </description>
+        <!-- Limits are 120 to 170 seconds -->
+        <LimitCheck event="L1AfdBkgChkTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+            lowerBound="120000" upperBound="170000" />
+    </Parameter>
+
+    <!-- The Timeliness (in milliseconds) of the latest L1 Events Chunk (output from L1-LI-AFD) -->
+    <Parameter name="L1AfdEvtChkTimeliness" type="java.lang.Integer" defaultValue="0">
+        <description>Timeliness in milliseconds of the latest L1 Events Chunk from L1-LI-AFD </description>
+        <!-- Limits are 120 to 170 seconds -->
+        <LimitCheck event="L1AfdEvtChkTimelinessOol" parent="/System/Timeliness" severity="2" type="java.lang.Integer"
+            lowerBound="120000" upperBound="170000" />
+    </Parameter>
+
+
+</System>
