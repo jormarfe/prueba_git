@@ -7,7 +7,7 @@
     
     <System name="block01" >
         <description>Geographic elevation for an L1C block </description>
-        <Parameter name= "south" type="java.lang.Float"  defaultValue="-8.9151">
+        <Parameter name= "south" type="java.lang.Float"  defaultValue="-9.9151">
             <description>Max Southern elevation of the block. Used to calculate the boundaries of the generated L1C zone.</description>
         </Parameter>
         <Parameter name= "north" type="java.lang.Float"  defaultValue="-8.6267">
